@@ -1,2 +1,3 @@
 # PowerTech C/C++ for VSCode
-ToDo
+
+This Extension is in develop...
