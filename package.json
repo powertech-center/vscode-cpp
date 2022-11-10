@@ -1,19 +1,19 @@
 {
-  "name": "vscode-cpp",
+  "name": "powercpp",
   "displayName": "PowerTech C/C++",
   "description": "Powerful C/C++ Extension for Modern Developers",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "publisher": "PowerTech",
-	"author": {
-		"name": "PowerTech - https://powertech.center"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/powertech-center/vscode-cpp"
-	},
-	"bugs": {
-		"url": "https://github.com/powertech-center/vscode-cpp/issues"
-	},
+  "author": {
+    "name": "PowerTech - https://powertech.center"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/powertech-center/vscode-cpp"
+  },
+  "bugs": {
+    "url": "https://github.com/powertech-center/vscode-cpp/issues"
+  },
   "engines": {
     "vscode": "^1.73.0"
   },
@@ -22,13 +22,13 @@
   ],
   "icon": "icon.jpg",
   "activationEvents": [
-    "onCommand:vscode-cpp.helloWorld"
+    "onCommand:powercpp.helloWorld"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "vscode-cpp.helloWorld",
+        "command": "powercpp.helloWorld",
         "title": "Hello World"
       }
     ]

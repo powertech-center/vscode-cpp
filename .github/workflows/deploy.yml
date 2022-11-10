@@ -1,0 +1,31 @@
+name: PowerTech C/C++ Extension Deploy 
+
+on:
+  push:
+    branches:
+      - master
+       
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          
+      - name: Preparing
+        run: |
+          npm install
+          npm install -g vsce
+      
+      - name: Testing
+        run: xvfb-run -a npm test
+        
+      - name: Publishing
+        env:
+          VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
+        run: python ./publish.py
