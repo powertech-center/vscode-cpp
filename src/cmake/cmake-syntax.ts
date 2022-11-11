@@ -1,4 +1,27 @@
-"use strict";
+/*
+The MIT License (MIT)
+
+Copyright (c) 2015 Nicolas MARTIN
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import {workspace, window, languages, ExtensionContext, TextDocument, DocumentSelector, Position, commands, LanguageConfiguration, CompletionItemKind, CompletionItem, SnippetString, CompletionItemProvider, Hover, HoverProvider, Disposable, CancellationToken} from 'vscode';
@@ -206,51 +229,6 @@ function cmake_help_all() {
         }
     };
     return promises;
-}
-
-async function cmake_online_help(search: string) {
-    let url = await cmake_help_url();
-    let v2x = url.endsWith('html'); // cmake < 3.0 
-    return Promise.all([
-        cmCommandsSuggestionsExact(search),
-        cmVariablesSuggestionsExact(search),
-        cmModulesSuggestionsExact(search),
-        cmPropertiesSuggestionsExact(search),
-    ]).then(function (results) {
-        var opener = require("opener");
-
-        var suggestions = Array.prototype.concat.apply([], results);
-
-        if (suggestions.length == 0) {
-            search = search.replace(/[<>]/g, '');
-            if (v2x || search.length == 0) {
-                opener(url);
-            } else {
-                opener(url + 'search.html?q=' + search + '&check_keywords=yes&area=default');
-            }
-        } else {
-            let suggestion = suggestions[0];
-            let type = cmakeTypeFromvscodeKind(suggestion.kind);
-            if (type == 'property') {
-                if (v2x) {
-                    opener(url);
-                } else {
-                    // TODO : needs to filter properties per scope to detect the right URL
-                    opener(url + 'search.html?q=' + search + '&check_keywords=yes&area=default');
-                }
-            } else {
-                if (type == 'function') {
-                    type = 'command';
-                }
-                search = search.replace(/[<>]/g, '');
-                if(v2x){
-                    opener(url + '#' + type + ':' + search);                    
-                }else {
-                    opener(url + type + '/' + search + '.html');
-                }
-            }
-        }
-    });
 }
 
 // this method is called when your extension is activated. activation is

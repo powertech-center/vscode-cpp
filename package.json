@@ -43,10 +43,6 @@
       }
     ],
     "commands": [
-      {
-        "command": "powercpp.helloWorld",
-        "title": "Hello World"
-      }
     ],
     "grammars": [
       {
@@ -60,31 +56,31 @@
           "id": "PowerTech Dark",
           "label": "PowerTech Dark",
           "uiTheme": "vs-dark",
-          "path": "./src/themes/powertech_dark.json"
+          "path": "./themes/powertech_dark.json"
       },
       {
         "id": "PowerTech Light",
         "label": "PowerTech Light",
         "uiTheme": "vs",
-        "path": "./src/themes/powertech_light.json"
+        "path": "./themes/powertech_light.json"
       },      
       {
         "id": "Old-school DevC++",
         "label": "Old-school DevC++",
         "uiTheme": "vs",
-        "path": "./src/themes/devcpp.json"
+        "path": "./themes/devcpp.json"
       },
       {
         "id": "Old-school Borland",
         "label": "Old-school Borland",
         "uiTheme": "vs",
-        "path": "./src/themes/borland.json"
+        "path": "./themes/borland.json"
       },
       {
         "id": "Old-school DOS",
         "label": "Old-school DOS",
         "uiTheme": "vs",
-        "path": "./src/themes/dos.json"
+        "path": "./themes/dos.json"
       }
     ],
     "configuration": {
