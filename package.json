@@ -14,6 +14,8 @@
   "bugs": {
     "url": "https://github.com/powertech-center/vscode-cpp/issues"
   },
+  "homepage": "https://powertech.center/clang",
+  "keywords": [],
   "engines": {
     "vscode": "^1.73.0"
   },
@@ -22,16 +24,78 @@
   ],
   "icon": "icon.jpg",
   "activationEvents": [
-    "onCommand:powercpp.helloWorld"
+    "onLanguage:cmake"
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "languages": [
+      {
+        "id": "cmake",
+        "extensions": [
+          ".cmake"
+        ],
+        "filenames": [
+          "CMakelists.txt"
+        ],
+        "aliases": [
+          "CMake"
+        ]
+      }
+    ],
     "commands": [
       {
         "command": "powercpp.helloWorld",
         "title": "Hello World"
       }
-    ]
+    ],
+    "grammars": [
+      {
+        "language": "cmake",
+        "scopeName": "source.cmake",
+        "path": "src/cmake/syntaxes/CMake.tmLanguage"
+      }
+    ],
+    "themes": [   
+      {
+          "id": "PowerTech Dark",
+          "label": "PowerTech Dark",
+          "uiTheme": "vs-dark",
+          "path": "./src/themes/powertech_dark.json"
+      },
+      {
+        "id": "PowerTech Light",
+        "label": "PowerTech Light",
+        "uiTheme": "vs",
+        "path": "./src/themes/powertech_light.json"
+      },      
+      {
+        "id": "Old-school DevC++",
+        "label": "Old-school DevC++",
+        "uiTheme": "vs",
+        "path": "./src/themes/devcpp.json"
+      },
+      {
+        "id": "Old-school Borland",
+        "label": "Old-school Borland",
+        "uiTheme": "vs",
+        "path": "./src/themes/borland.json"
+      },
+      {
+        "id": "Old-school DOS",
+        "label": "Old-school DOS",
+        "uiTheme": "vs",
+        "path": "./src/themes/dos.json"
+      }
+    ],
+    "configuration": {
+      "title": "C/C++",
+      "properties": {
+        "cpp.path": {
+          "type": "string",
+          "description": "C/C++ binaries path. By default, the global search for the compiler and other utilities is used."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
