@@ -43,6 +43,26 @@
       }
     ],
     "commands": [
+      {
+        "command": "cpp.cmakeClean",
+        "title": "CMake: Clean up generated files"
+      },
+      {
+        "command": "cpp.cmakeRelease",
+        "title": "CMake: Build with CMAKE_BUILD_TYPE=Release"
+      },
+      {
+        "command": "cpp.cmakeDebug",
+        "title": "CMake: Debug after build with CMAKE_BUILD_TYPE=Debug"
+      },
+      {
+        "command": "cpp.cmakeRebug",
+        "title": "CMake: Debug after build with CMAKE_BUILD_TYPE=RelWithDebInfo"
+      },
+      {
+        "command": "cpp.cmakeMinimize",
+        "title": "CMake: Build with CMAKE_BUILD_TYPE=MinSizeRel"
+      }
     ],
     "grammars": [
       {
