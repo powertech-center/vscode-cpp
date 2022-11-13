@@ -24,7 +24,14 @@
   ],
   "icon": "icon.jpg",
   "activationEvents": [
-    "onLanguage:cmake"
+    "workspaceContains:CMakeLists.txt",
+    "onLanguage:cmake",
+    "workspaceContains:build.ninja",
+    "onLanguage:ninja",
+    "workspaceContains:build.Makefile",
+    "workspaceContains:build.makefile",
+    "workspaceContains:build.GNUmakefile",
+    "onLanguage:makefile"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -40,50 +47,64 @@
         "aliases": [
           "CMake"
         ]
-      }
-    ],
-    "commands": [
-      {
-        "command": "cpp.cmakeClean",
-        "title": "CMake: Clean up generated files"
       },
       {
-        "command": "cpp.cmakeRelease",
-        "title": "CMake: Build with CMAKE_BUILD_TYPE=Release"
+        "id": "ninja",
+        "extensions": [
+          ".ninja"
+        ],
+        "configuration": "./languages/ninja-configuration.json",
+        "aliases": [
+          "Ninja"
+        ]
       },
       {
-        "command": "cpp.cmakeDebug",
-        "title": "CMake: Debug after build with CMAKE_BUILD_TYPE=Debug"
-      },
-      {
-        "command": "cpp.cmakeRebug",
-        "title": "CMake: Debug after build with CMAKE_BUILD_TYPE=RelWithDebInfo"
-      },
-      {
-        "command": "cpp.cmakeMinimize",
-        "title": "CMake: Build with CMAKE_BUILD_TYPE=MinSizeRel"
-      }
+        "id": "makefile",
+        "filenames": [
+            "Makefile",
+            "makefile",
+            "GNUmakefile"
+        ],
+        "firstLine": "^#!\\s*/usr/bin/make",
+        "configuration": "./language/make-configuration.json",
+        "aliases": [
+          "Makefile"
+        ]
+    }
     ],
     "grammars": [
       {
         "language": "cmake",
         "scopeName": "source.cmake",
-        "path": "src/cmake/syntaxes/CMake.tmLanguage"
+        "path": "languages/CMake.tmLanguage"
+      },
+      {
+        "language": "ninja",
+        "scopeName": "source.ninja",
+        "path": "./languages/ninja.tmLanguage"
+      },
+      {
+        "language": "makefile",
+        "scopeName": "source.makefile",
+        "path": "./languages/make.tmLanguage.json",
+        "tokenTypes": {
+            "string.interpolated": "other"
+        }
       }
     ],
-    "themes": [   
+    "themes": [
       {
-          "id": "PowerTech Dark",
-          "label": "PowerTech Dark",
-          "uiTheme": "vs-dark",
-          "path": "./themes/powertech_dark.json"
+        "id": "PowerTech Dark",
+        "label": "PowerTech Dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/powertech_dark.json"
       },
       {
         "id": "PowerTech Light",
         "label": "PowerTech Light",
         "uiTheme": "vs",
         "path": "./themes/powertech_light.json"
-      },      
+      },
       {
         "id": "Old-school DevC++",
         "label": "Old-school DevC++",
@@ -103,6 +124,100 @@
         "path": "./themes/dos.json"
       }
     ],
+    "commands": [
+      {
+        "command": "cpp.cmakeClean",
+        "title": "CMake: Clean"
+      },
+      {
+        "command": "cpp.cmakeRelease",
+        "title": "CMake: Build CMAKE_BUILD_TYPE=Release"
+      },
+      {
+        "command": "cpp.cmakeDebug",
+        "title": "CMake: Debug after build CMAKE_BUILD_TYPE=Debug"
+      },
+      {
+        "command": "cpp.cmakeRebug",
+        "title": "CMake: Debug after build CMAKE_BUILD_TYPE=RelWithDebInfo"
+      },
+      {
+        "command": "cpp.cmakeMinimize",
+        "title": "CMake: Build CMAKE_BUILD_TYPE=MinSizeRel"
+      },
+      {
+        "command": "cpp.ninjaClean",
+        "title": "Ninja: Clean"
+      },
+      {
+        "command": "cpp.ninjaRelease",
+        "title": "Ninja: Build Release"
+      },
+      {
+        "command": "cpp.ninjaDebug",
+        "title": "Ninja: Debug after build Debug"
+      },
+      {
+        "command": "cpp.makefileClean",
+        "title": "Makefile: Clean"
+      },
+      {
+        "command": "cpp.makefileRelease",
+        "title": "Makefile: Build Release"
+      },
+      {
+        "command": "cpp.makefileDebug",
+        "title": "Makefile: Debug after build Debug"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "cpp.cmakeClean",
+          "when": "cmake:isPoject || editorLangId == cmake"
+        },
+        {
+          "command": "cpp.cmakeRelease",
+          "when": "cmake:isPoject || editorLangId == cmake"
+        },
+        {
+          "command": "cpp.cmakeDebug",
+          "when": "cmake:isPoject || editorLangId == cmake"
+        },
+        {
+          "command": "cpp.cmakeRebug",
+          "when": "cmake:isPoject || editorLangId == cmake"
+        },
+        {
+          "command": "cpp.cmakeMinimize",
+          "when": "cmake:isPoject || editorLangId == cmake"
+        },
+        {
+          "command": "cpp.ninjaClean",
+          "when": "ninja:isPoject || editorLangId == ninja"
+        },
+        {
+          "command": "cpp.ninjaRelease",
+          "when": "ninja:isPoject || editorLangId == ninja"
+        },
+        {
+          "command": "cpp.ninjaDebug",
+          "when": "ninja:isPoject || editorLangId == ninja"
+        },
+        {
+          "command": "cpp.makefileClean",
+          "when": "makefile:isPoject || editorLangId == makefile"
+        },
+        {
+          "command": "cpp.makefileRelease",
+          "when": "makefile:isPoject || editorLangId == makefile"
+        },
+        {
+          "command": "cpp.makefileDebug",
+          "when": "makefile:isPoject || editorLangId == makefile"
+        }
+      ]
+    },
     "configuration": {
       "title": "C/C++",
       "properties": {

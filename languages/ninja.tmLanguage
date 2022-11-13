@@ -1,0 +1,166 @@
+<!--The MIT License (MIT)
+
+Copyright (c) 2015 K. Adam Christensen
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Adapted from https://github.com/pope/SublimeNinja
+-->
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>fileTypes</key>
+	<array>
+		<string>ninja</string>
+	</array>
+	<key>name</key>
+	<string>Ninja</string>
+	<key>patterns</key>
+	<array>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.comment.ninja</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>Comment line.</string>
+			<key>match</key>
+			<string>^\s*(#).*$\n?</string>
+			<key>name</key>
+			<string>comment.line.number-sign.ninja</string>
+		</dict>
+		<dict>
+			<key>begin</key>
+			<string>^(rule)\b</string>
+			<key>beginCaptures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.other.ninja</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>Rule keyword and keywords for a rule.</string>
+			<key>end</key>
+			<string>^(?=\S)</string>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>include</key>
+					<string>$self</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>\b(?:command|deps|depfile|description|generator|pool|restat|rspfile|rspfile_content)\b</string>
+					<key>name</key>
+					<string>keyword.other.ninja</string>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>begin</key>
+			<string>^(pool)\b</string>
+			<key>beginCaptures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.other.ninja</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>Pool keyword and keywords for a pool.</string>
+			<key>end</key>
+			<string>^(?=\S)</string>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>include</key>
+					<string>$self</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>\b(?:depth)\b</string>
+					<key>name</key>
+					<string>keyword.other.ninja</string>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>Other Keywords.</string>
+			<key>match</key>
+			<string>^(?:build|rule|default|include|subninja)\b</string>
+			<key>name</key>
+			<string>keyword.other.ninja</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>Operators for variable assignment (=), rule definition (:), implicit (|) and order only (||) dependencies.</string>
+			<key>match</key>
+			<string>(?:[=:]|\|{1,2})(?=\s)</string>
+			<key>name</key>
+			<string>keyword.operator.ninja</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>Line wrap.</string>
+			<key>match</key>
+			<string>\$$</string>
+			<key>name</key>
+			<string>keyword.operator.ninja</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>Dollar literal.</string>
+			<key>match</key>
+			<string>\$\$</string>
+			<key>name</key>
+			<string>keyword.operator.ninja</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>Simple variables, e.g. $var.</string>
+			<key>match</key>
+			<string>\$[[:alnum:]_-]+</string>
+			<key>name</key>
+			<string>variable.other.ninja</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>Variables, e.g. ${some.var.name}.</string>
+			<key>match</key>
+			<string>\${[[:alnum:]_.-]+}</string>
+			<key>name</key>
+			<string>variable.other.ninja</string>
+		</dict>
+	</array>
+	<key>scopeName</key>
+	<string>source.ninja</string>
+	<key>uuid</key>
+	<string>e837e9ed-6ad9-4103-b705-50503a86fc83</string>
+</dict>
+</plist>
