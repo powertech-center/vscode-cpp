@@ -92,38 +92,6 @@
         }
       }
     ],
-    "themes": [
-      {
-        "id": "PowerTech Dark",
-        "label": "PowerTech Dark",
-        "uiTheme": "vs-dark",
-        "path": "./themes/powertech_dark.json"
-      },
-      {
-        "id": "PowerTech Light",
-        "label": "PowerTech Light",
-        "uiTheme": "vs",
-        "path": "./themes/powertech_light.json"
-      },
-      {
-        "id": "Old-school DevC++",
-        "label": "Old-school DevC++",
-        "uiTheme": "vs",
-        "path": "./themes/devcpp.json"
-      },
-      {
-        "id": "Old-school Borland",
-        "label": "Old-school Borland",
-        "uiTheme": "vs",
-        "path": "./themes/borland.json"
-      },
-      {
-        "id": "Old-school DOS",
-        "label": "Old-school DOS",
-        "uiTheme": "vs",
-        "path": "./themes/dos.json"
-      }
-    ],
     "commands": [
       {
         "command": "cpp.cmakeClean",

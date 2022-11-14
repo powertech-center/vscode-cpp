@@ -11,4 +11,10 @@ We are constantly working to improve our tools, keeping them Simple, and we real
 * ToDo CMake/Ninja/Makefile commands
 * ToDo C/C++ syntax highlighting and IntelliSense
 * ToDo Debugging
-* Old-school Themes (based on [Dev-C++ Theme](https://marketplace.visualstudio.com/items?itemName=Guyutongxue.devcpp-theme) and [Delphi Themes](https://marketplace.visualstudio.com/items?itemName=alefragnani.delphi-themes))
+
+We also recommend that you install our [PowerTech Themes](https://marketplace.visualstudio.com/items?itemName=PowerTech.powerthemes) Extension, which will help make your work more comfortable and inspiring:
+* [PowerTech Dark](https://github.com/powertech-center/vscode-themes/#powertech-dark-based-on-default-dark-theme)
+* [PowerTech Light](https://github.com/powertech-center/vscode-themes/#powertech-light-based-on-default-light-theme)
+* [Old-school DevC++](https://github.com/powertech-center/vscode-themes/#old-school-devc-based-on-dev-c-theme)
+* [Old-school Borland](https://github.com/powertech-center/vscode-themes/#old-school-borland-based-on-delphi-themes)
+* [Old-school DOS](https://github.com/powertech-center/vscode-themes/#old-school-dos-based-on-delphi-themes)
