@@ -1,6 +1,6 @@
 import os, io, stat, shutil
 import json
-import requests, zipfile
+import requests, zipfile, tarfile
 
 # paths
 localpath = os.path.dirname(os.path.realpath(__file__))
@@ -8,21 +8,27 @@ temp_path = localpath + '/.temp'
 windows_path = localpath + '/thirdparty/windows'
 linux_path = localpath + '/thirdparty/linux'
 macos_path = localpath + '/thirdparty/macos'
+platform_paths = [windows_path, linux_path, macos_path]
 
 # empty directories
-shutil.rmtree(windows_path, ignore_errors=True)
-shutil.rmtree(linux_path, ignore_errors=True)
-shutil.rmtree(macos_path, ignore_errors=True)
-os.mkdir(windows_path)
-os.mkdir(linux_path)
-os.mkdir(macos_path)
+for path in platform_paths:
+   shutil.rmtree(path, ignore_errors=True)
+   os.mkdir(path)
+   os.mkdir(path + '/bin')
 
 # download and unpack to temp
-def download_unpack_temp(url):
+def download_unpack_temp(url, kind):
     content = requests.get(url).content
-    ext = os.path.splitext(url)[1]
-    if (ext == '.zip'):
+    if (kind == 'zip'):
         zipfile.ZipFile(io.BytesIO(content)).extractall(temp_path)
+    elif (kind == 'tar.gz'):
+        tarfilename = f'{temp_path}/arch.tar.gz'
+        with open(tarfilename, 'wb') as f:
+            f.write(content)
+            f.close()
+        file = tarfile.open(tarfilename)  
+        file.extractall(temp_path)
+        file.close()  
 
 # copy binary
 def copy_binary(target_directory, temp_filename, platform):
@@ -31,14 +37,43 @@ def copy_binary(target_directory, temp_filename, platform):
         filename = filename + '.exe'
     shutil.copyfile(filename, target_directory + '/' + os.path.basename(filename))
 
+# copy folder
+def copy_folder(target_directory, temp_directory):
+    directory = temp_path + '/' + temp_directory
+    shutil.copytree(directory, target_directory)
 
 # GN
 def download_gn(target, url, platform, version):
-    print(f'GN target path: {target}, url: {url}, platform: {platform}, version: {version}')
+    # unarchive
+    download_unpack_temp(url, 'zip')
+    # copying
+    copy_binary(target, 'gn', platform)
+    copy_folder(target + '/.cipdpkg', '.cipdpkg')
 
 # CMake
 def download_cmake(target, url, platform, version):
-    print(f'CMake target path: {target}, url: {url}, platform: {platform}, version: {version}') 
+    # unarchive
+    name = f'cmake-{version}-{platform}-'
+    kind = 'tar.gz'
+    if (platform == 'windows'):
+        name = name + 'x86_64'
+        kind = 'zip'
+    elif (platform == 'linux'):
+        name = name + 'x86_64'
+    else:
+        name = name + 'universal'
+    download_unpack_temp(f'{url}/{name}.{kind}', kind)    
+    # copying
+    if (platform == 'macos'):
+       name = name + '/CMake.app/Contents'
+    copy_folder(target + '/share', name + '/share')
+    target_bin = target + '/bin'   
+    source_bin = name + '/bin'
+    copy_binary(target_bin, source_bin + '/cmake', platform)
+    copy_binary(target_bin, source_bin + '/ctest', platform)
+    copy_binary(target_bin, source_bin + '/cpack', platform)
+    if (platform == 'windows'):
+        copy_binary(target_bin, source_bin + '/cmcldeps', platform)
 
 # Ninja
 def download_ninja(target, url, platform, version):
@@ -46,9 +81,9 @@ def download_ninja(target, url, platform, version):
     p = platform
     if (platform != 'linux'):
         p = platform[:3]
-    download_unpack_temp(f'{url}/ninja-{p}.zip')
+    download_unpack_temp(f'{url}/ninja-{p}.zip', 'zip')
     # copying
-    copy_binary(target, 'ninja', platform)  
+    copy_binary(target, 'ninja', platform)
     
 # Makefile
 def download_makefile(target, url, platform, version):
@@ -64,11 +99,19 @@ utils = json.loads(
             "windows": "https://chrome-infra-packages.appspot.com/dl/gn/gn/windows-amd64/+/latest",
             "linux": "https://chrome-infra-packages.appspot.com/dl/gn/gn/linux-amd64/+/latest",
             "macos": "https://chrome-infra-packages.appspot.com/dl/gn/gn/mac-amd64/+/latest"
-        }
+        },
+        "binaries": [
+            "gn"
+        ]
     },
     {
         "name": "CMake",
-        "url": "https://github.com/Kitware/CMake"
+        "url": "https://github.com/Kitware/CMake",
+        "binaries": [
+            "bin/cmake",
+            "bin/ctest",
+            "bin/cpack"
+        ]
     },
     {
         "name": "Ninja",
@@ -85,7 +128,6 @@ utils = json.loads(
 download_funcs = [download_gn, download_cmake, download_ninja, download_makefile]
 
 # download binaries
-platform_paths = [windows_path, linux_path, macos_path]
 for util_index, util in enumerate(utils):
     # item
     name = util['name']
@@ -131,7 +173,4 @@ for util_index, util in enumerate(utils):
             if (platform == "windows"):
                 filename = filename + '.exe'
             st = os.stat(filename)
-            os.chmod(filename, st.st_mode | stat.S_IEXEC)   
-
-
-
+            os.chmod(filename, st.st_mode | stat.S_IEXEC)

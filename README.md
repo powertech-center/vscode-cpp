@@ -15,7 +15,7 @@ We are glad to offer you to download __PowerTech Clang__ fork. You will get not 
 
 
 ### Build systems
-We are constantly working to improve our tools, keeping them Simple, and we really hope that they help Developers do their work more efficiently. Therefore, it is very important for us to retain the ability to debug projects of almost any build system:
+We are constantly working to improve our tools, keeping them Simple, and we really hope that they help Developers do their work more efficiently. We talked to the Developers, saw how many different build systems they use, and decided to support almost every one:
 * ToDo GN (based on [GN](https://marketplace.visualstudio.com/items?itemName=npclaudiu.vscode-gn))
 * ToDo CMake (based on [CMake](https://marketplace.visualstudio.com/items?itemName=twxs.cmake) and [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools))
 * ToDo GYP (based on [GYP](https://marketplace.visualstudio.com/items?itemName=XadillaX.gyp))

@@ -26,7 +26,9 @@ jobs:
         run: xvfb-run -a npm test
         
       - name: Binaries
-        run: python ./binaries.py
+        run: |
+          pip install requests
+          python ./binaries.py
         
       - name: Publishing
         env:

@@ -4,7 +4,6 @@ import os
 
 # date time version
 version = datetime.datetime.utcnow().strftime('%y.%m.%d')
-version = '22.11.16'
 print('Publishing ' + version + '...', flush=True)
 
 # modify package.json version

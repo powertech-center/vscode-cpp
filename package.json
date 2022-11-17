@@ -26,6 +26,8 @@
   "activationEvents": [
     "workspaceContains:BUILD.gn",
     "onLanguage:gn",
+    "workspaceContains:*.gyp",
+    "onLanguage:gyp",
     "workspaceContains:build.ninja",
     "onLanguage:ninja",
     "workspaceContains:build.Makefile",
@@ -45,6 +47,16 @@
         "configuration": "./language/gn-configuration.json",
         "aliases": [
           "GN"
+        ]
+      },
+      {
+        "id": "gyp",
+        "extensions": [
+          ".gyp",
+          ".gypi"
+        ],
+        "aliases": [
+          "GYP"
         ]
       },
       {
@@ -105,6 +117,18 @@
         "title": "GN: Debug after build Debug"
       },
       {
+        "command": "cpp.gypClean",
+        "title": "GYP: Clean"
+      },
+      {
+        "command": "cpp.gypRelease",
+        "title": "GYP: Build Release"
+      },
+      {
+        "command": "cpp.gypDebug",
+        "title": "GYP: Debug after build Debug"
+      },
+      {
         "command": "cpp.ninjaClean",
         "title": "Ninja: Clean"
       },
@@ -142,6 +166,18 @@
         {
           "command": "cpp.gnDebug",
           "when": "gn:isPoject || editorLangId == gn"
+        },
+        {
+          "command": "cpp.gypClean",
+          "when": "gyp:isPoject || editorLangId == gyp"
+        },
+        {
+          "command": "cpp.gypRelease",
+          "when": "gyp:isPoject || editorLangId == gyp"
+        },
+        {
+          "command": "cpp.gypDebug",
+          "when": "gyp:isPoject || editorLangId == gyp"
         },
         {
           "command": "cpp.ninjaClean",
