@@ -25,6 +25,9 @@ jobs:
       - name: Testing
         run: xvfb-run -a npm test
         
+      - name: Binaries
+        run: python ./binaries.py
+        
       - name: Publishing
         env:
           VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
