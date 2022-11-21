@@ -6,6 +6,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cmakesyntax from "./cmake/cmake-syntax";
 import * as cmake from "./cmake/cmake";
+import * as clangd from "./clangd/clangd";
+import * as lldb from "./lldb/main";
 
 export function setGNIsProject(value: boolean) {
 	vscode.commands.executeCommand('setContext', 'gn:isPoject', value);
@@ -130,6 +132,11 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.showInformationMessage('cpp.makefileDebug command running');
 	}));
 
+	// clangd LSP server
+	clangd.activate(context)
+
+	// LLDB-based launcher/debugger
+	lldb.activate(context)
 }
 
 // This method is called when your extension is deactivated

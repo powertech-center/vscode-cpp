@@ -22,8 +22,8 @@ jobs:
           npm install
           npm install -g vsce
       
-      - name: Testing
-        run: xvfb-run -a npm test
+      #- name: Testing
+      #  run: xvfb-run -a npm test
         
       - name: Binaries
         run: |

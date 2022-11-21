@@ -1,6 +1,6 @@
 # PowerTech C/C++ for VSCode
 
-This Extension is under development...
+***This Extension is under development, please wait a few weeks...***
 
 We care about Developers, so we create Simple, Powerful and Convenient tools for them. This Extension is intended for C/C++ Developers. We believe that the most functional, modern and promising compiler today is Clang ([LLVM](https://llvm.org) project), so we built our Extension relative to the Clang/LLVM infrastructure.
 

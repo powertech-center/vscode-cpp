@@ -33,7 +33,17 @@
     "workspaceContains:build.Makefile",
     "workspaceContains:build.makefile",
     "workspaceContains:build.GNUmakefile",
-    "onLanguage:makefile"
+    "onLanguage:makefile",
+    "onLanguage:c",
+    "onLanguage:cpp",
+    "onLanguage:cuda-cpp",
+    "onLanguage:objective-c",
+    "onLanguage:objective-cpp",
+    "onDebug",
+    "onUri",
+    "onStartupFinished",
+    "onCommand:lldb.attach",
+    "onCommand:lldb.commandPrompt"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -81,6 +91,15 @@
         "aliases": [
           "Makefile"
         ]
+      },
+      {
+        "id": "lldb.disassembly",
+        "extensions": [
+          ".disasm"
+        ],
+        "aliases": [
+          "Disassembly"
+        ]
       }
     ],
     "grammars": [
@@ -101,6 +120,11 @@
         "tokenTypes": {
           "string.interpolated": "other"
         }
+      },
+      {
+        "language": "lldb.disassembly",
+        "scopeName": "source.disassembly",
+        "path": "./languages/disassembly.json"
       }
     ],
     "commands": [
@@ -151,9 +175,252 @@
       {
         "command": "cpp.makefileDebug",
         "title": "Makefile: Debug after build Debug"
+      },
+      {
+        "command": "clangd.switchheadersource",
+        "category": "clangd",
+        "title": "Switch Between Source/Header"
+      },
+      {
+        "command": "clangd.restart",
+        "category": "clangd",
+        "title": "Restart language server"
+      },
+      {
+        "command": "clangd.typeHierarchy",
+        "category": "clangd",
+        "title": "Open Type Hierarchy"
+      },
+      {
+        "command": "clangd.typeHierarchy.viewParents",
+        "category": "clangd",
+        "title": "Types: Show Base Classes",
+        "icon": "$(triangle-up)"
+      },
+      {
+        "command": "clangd.typeHierarchy.viewChildren",
+        "category": "clangd",
+        "title": "Types: Show Derived Classes",
+        "icon": "$(triangle-down)"
+      },
+      {
+        "command": "clangd.typeHierarchy.close",
+        "category": "clangd",
+        "title": "Close",
+        "icon": "$(panel-close)"
+      },
+      {
+        "command": "clangd.memoryUsage",
+        "category": "clangd",
+        "title": "Show memory usage",
+        "enablement": "clangd.memoryUsage.supported",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "clangd.memoryUsage.close",
+        "category": "clangd",
+        "title": "Close",
+        "icon": "$(panel-close)"
+      },
+      {
+        "command": "clangd.ast",
+        "category": "clangd",
+        "title": "Show AST",
+        "enablement": "clangd.ast.supported",
+        "icon": "$(list-tree)"
+      },
+      {
+        "command": "clangd.ast.close",
+        "category": "clangd",
+        "title": "Close",
+        "icon": "$(panel-close)"
+      },
+      {
+        "command": "clangd.projectConfig",
+        "category": "clangd",
+        "title": "Open project configuration file",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "clangd.userConfig",
+        "category": "clangd",
+        "title": "Open user configuration file",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "clangd.inlayHints.toggle",
+        "category": "clangd",
+        "title": "Toggle inlay hints",
+        "enablement": "clangd.inlayHints.supported"
+      },
+      {
+        "category": "LLDB",
+        "title": "Display Format ...",
+        "command": "lldb.displayFormat"
+      },
+      {
+        "category": "LLDB",
+        "title": "Show Disassembly ...",
+        "command": "powercpp.showDisassembly"
+      },
+      {
+        "category": "LLDB",
+        "title": "Toggle Disassembly",
+        "command": "lldb.toggleDisassembly"
+      },
+      {
+        "category": "LLDB",
+        "title": "Toggle Pointee Summaries",
+        "command": "lldb.toggleDerefPointers"
+      },
+      {
+        "category": "LLDB",
+        "title": "Toggle Debug Console Mode",
+        "command": "lldb.toggleConsoleMode"
+      },
+      {
+        "category": "LLDB",
+        "title": "Run Diagnostics",
+        "command": "lldb.diagnose"
+      },
+      {
+        "category": "LLDB",
+        "title": "Generate Launch Configurations from Cargo.toml",
+        "command": "lldb.getCargoLaunchConfigs"
+      },
+      {
+        "category": "LLDB",
+        "title": "Display Options...",
+        "command": "lldb.changeDisplaySettings"
+      },
+      {
+        "category": "LLDB",
+        "title": "Copy Value",
+        "command": "lldb.modules.copyValue"
+      },
+      {
+        "category": "LLDB",
+        "title": "Use Alternate Backend...",
+        "command": "lldb.alternateBackend"
+      },
+      {
+        "category": "LLDB",
+        "title": "Attach to Process...",
+        "command": "lldb.attach"
+      },
+      {
+        "category": "LLDB",
+        "title": "Command Prompt",
+        "command": "lldb.commandPrompt"
+      },
+      {
+        "category": "LLDB",
+        "title": "Search Symbols...",
+        "command": "lldb.symbols",
+        "enablement": "debugType == 'powercpp'"
+      },
+      {
+        "category": "LLDB",
+        "title": "View Memory...",
+        "command": "lldb.viewMemory",
+        "enablement": "debugType == 'powercpp'"
       }
     ],
+    "keybindings": [
+      {
+        "command": "clangd.switchheadersource",
+        "key": "Alt+o",
+        "mac": "Alt+cmd+o",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "clangd.typeHierarchy",
+        "key": "Shift+Alt+t",
+        "when": "editorTextFocus"
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "clangd.typeHierarchyView",
+          "name": "Type Hierarchy",
+          "when": "clangd.typeHierarchyVisible"
+        },
+        {
+          "id": "clangd.memoryUsage",
+          "name": "clangd Memory Usage",
+          "when": "clangd.memoryUsage.hasData"
+        },
+        {
+          "id": "clangd.ast",
+          "name": "AST",
+          "when": "clangd.ast.hasData"
+        }
+      ],
+      "debug": [
+        {
+          "id": "loadedModules",
+          "name": "Modules",
+          "when": "debugType == 'powercpp'"
+        }
+      ]
+    },
     "menus": {
+      "editor/context": [
+        {
+          "command": "clangd.typeHierarchy",
+          "when": "resourceLangId == cpp && clangd.enableTypeHierarchy",
+          "group": "0_navigation@4",
+          "_comment": "see https://github.com/microsoft/vscode-references-view/blob/f63eaed9934ca5ecc8f3fb3ca096f38c6e5e181f/package.json#L162"
+        },
+        {
+          "command": "clangd.switchheadersource",
+          "when": "resourceLangId == c || resourceLangId == cpp || resourceLangId == cuda-cpp || resourceLangId == objective-c || resourceLangId == objective-cpp",
+          "group": "0_navigation@5"
+        },
+        {
+          "command": "clangd.ast",
+          "when": "clangd.ast.supported"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "clangd.typeHierarchy.viewParents",
+          "when": "view == clangd.typeHierarchyView",
+          "group": "navigation"
+        },
+        {
+          "command": "clangd.typeHierarchy.viewChildren",
+          "when": "view == clangd.typeHierarchyView",
+          "group": "navigation"
+        },
+        {
+          "command": "clangd.typeHierarchy.close",
+          "when": "view == clangd.typeHierarchyView",
+          "group": "navigation"
+        },
+        {
+          "command": "clangd.memoryUsage.close",
+          "when": "view == clangd.memoryUsage",
+          "group": "navigation"
+        },
+        {
+          "command": "clangd.memoryUsage",
+          "when": "view == clangd.memoryUsage",
+          "group": "navigation"
+        },
+        {
+          "command": "clangd.ast.close",
+          "when": "view == clangd.ast",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "lldb.modules.copyValue",
+          "when": "viewItem == lldb.moduleProperty"
+        }
+      ],
       "commandPalette": [
         {
           "command": "cpp.gnClean",
@@ -202,18 +469,862 @@
         {
           "command": "cpp.makefileDebug",
           "when": "makefile:isPoject || editorLangId == makefile"
+        },
+        {
+          "command": "clangd.typeHierarchy.viewParents",
+          "when": "resourceLangId == cpp"
+        },
+        {
+          "command": "clangd.typeHierarchy.viewChildren",
+          "when": "resourceLangId == cpp"
+        },
+        {
+          "command": "clangd.memoryUsage",
+          "when": "clangd.memoryUsage.supported"
+        },
+        {
+          "command": "lldb.modules.copyValue",
+          "when": "viewItem == lldb.moduleProperty"
         }
       ]
     },
+    "breakpoints": [
+      {
+        "language": "c"
+      },
+      {
+        "language": "cpp"
+      },
+      {
+        "language": "lldb.disassembly"
+      },
+      {
+        "language": "objective-c"
+      },
+      {
+        "language": "objective-cpp"
+      }
+    ],
     "configuration": {
       "title": "C/C++",
       "properties": {
         "cpp.path": {
           "type": "string",
           "description": "C/C++ binaries path. By default, the global search for the compiler and other utilities is used."
+        },
+        "clangd.path": {
+          "type": "string",
+          "default": "clangd",
+          "scope": "machine-overridable",
+          "description": "The path to clangd executable, e.g.: /usr/bin/clangd."
+        },
+        "clangd.arguments": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "description": "Arguments for clangd server."
+        },
+        "clangd.trace": {
+          "type": "string",
+          "description": "Names a file that clangd should log a performance trace to, in chrome trace-viewer JSON format."
+        },
+        "clangd.semanticHighlighting": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable semantic highlighting in clangd.",
+          "deprecationMessage": "Legacy semanticHighlights is no longer supported. Please use `editor.semanticHighlighting.enabled` instead."
+        },
+        "clangd.fallbackFlags": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "description": "Extra clang flags used to parse files when no compilation database is found."
+        },
+        "clangd.serverCompletionRanking": {
+          "type": "boolean",
+          "default": true,
+          "description": "Always rank completion items on the server as you type. This produces more accurate results at the cost of higher latency than client-side filtering."
+        },
+        "clangd.restartAfterCrash": {
+          "type": "boolean",
+          "default": true,
+          "description": "Auto restart clangd (up to 4 times) if it crashes."
+        },
+        "clangd.onConfigChanged": {
+          "type": "string",
+          "default": "prompt",
+          "description": "What to do when clangd configuration files are changed. Ignored for clangd 12+, which can reload such files itself.",
+          "enum": [
+            "prompt",
+            "restart",
+            "ignore"
+          ],
+          "enumDescriptions": [
+            "Prompt the user for restarting the server",
+            "Automatically restart the server",
+            "Do nothing"
+          ]
+        },
+        "clangd.detectExtensionConflicts": {
+          "type": "boolean",
+          "default": true,
+          "description": "Warn about conflicting extensions and suggest disabling them."
+        },
+        "lldb.launch.initCommands": {
+          "markdownDescription": "Commands executed *before* initCommands in individual launch configurations.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "order": 1,
+          "scope": "resource"
+        },
+        "lldb.launch.preRunCommands": {
+          "markdownDescription": "Commands executed *before* preRunCommands in individual launch configurations.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "order": 2,
+          "scope": "resource"
+        },
+        "lldb.launch.postRunCommands": {
+          "markdownDescription": "Commands executed *before* postRunCommands in individual launch configurations.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "order": 3,
+          "scope": "resource"
+        },
+        "lldb.launch.exitCommands": {
+          "markdownDescription": "Commands executed *after* exitCommands in individual launch configurations.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "order": 4,
+          "scope": "resource"
+        },
+        "lldb.launch.env": {
+          "description": "Additional environment variables merged with 'env' individual launch configurations.",
+          "type": "object",
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          },
+          "default": {},
+          "order": 10,
+          "scope": "resource"
+        },
+        "lldb.launch.cwd": {
+          "description": "Default program working directory.",
+          "type": "string",
+          "default": "${workspaceFolder}",
+          "order": 10,
+          "scope": "resource"
+        },
+        "lldb.launch.terminal": {
+          "description": "Default terminal type.",
+          "type": "string",
+          "enum": [
+            "integrated",
+            "external",
+            "console"
+          ],
+          "enumDescriptions": [
+            "Use integrated terminal in VSCode.",
+            "Use external terminal window.",
+            "Use VScode Debug Console for stdout and stderr. Stdin will be unavailable."
+          ],
+          "default": "console",
+          "order": 10,
+          "scope": "resource"
+        },
+        "lldb.launch.stdio": {
+          "description": "Default destination for stdio streams: null = send to debugger console or a terminal, \"<path>\" = attach to a file/tty/fifo.",
+          "type": [
+            "null",
+            "string",
+            "array",
+            "object"
+          ],
+          "default": null,
+          "order": 10,
+          "scope": "resource"
+        },
+        "lldb.launch.expressions": {
+          "description": "The default evaluator type used for expressions.",
+          "type": "string",
+          "enum": [
+            "simple",
+            "python",
+            "native"
+          ],
+          "default": "simple",
+          "order": 10
+        },
+        "lldb.launch.sourceMap": {
+          "description": "Additional entries that will be merged with 'sourceMap's of individual launch configurations.",
+          "type": "object",
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          },
+          "default": {},
+          "order": 10,
+          "scope": "resource"
+        },
+        "lldb.launch.relativePathBase": {
+          "description": "Default base directory used for resolution of relative source paths.  Defaults to \"${workspaceFolder}\".",
+          "type": "string",
+          "order": 10
+        },
+        "lldb.launch.sourceLanguages": {
+          "description": "A list of source languages to enable language-specific features for.",
+          "type": "array",
+          "default": [
+            "cpp",
+            "rust"
+          ],
+          "order": 100
+        },
+        "lldb.launch.debugServer": {
+          "description": "Debug server port.",
+          "type": "number",
+          "default": 4711,
+          "order": 100
+        },
+        "lldb.suppressMissingSourceFiles": {
+          "description": "Suppress VSCode's missing source file errors (requires probing for existence of the source file).",
+          "type": "boolean",
+          "default": true,
+          "scope": "resource"
+        },
+        "lldb.evaluationTimeout": {
+          "description": "Timeout for expression evaluation, in seconds.",
+          "type": "number",
+          "default": 5,
+          "scope": "resource"
+        },
+        "lldb.displayFormat": {
+          "description": "Default format for displayed variable values.",
+          "type": "string",
+          "enum": [
+            "auto",
+            "hex",
+            "decimal",
+            "binary"
+          ],
+          "default": "auto",
+          "scope": "resource"
+        },
+        "powercpp.showDisassembly": {
+          "description": "When to show disassembly.",
+          "type": "string",
+          "enum": [
+            "auto",
+            "never",
+            "always"
+          ],
+          "default": "auto",
+          "enumDescriptions": [
+            "Only when source is not available.",
+            "Never show.",
+            "Always show, even if source is available."
+          ],
+          "scope": "resource"
+        },
+        "lldb.dereferencePointers": {
+          "description": "Whether to show the numeric value of pointers, or a summary of the pointee.",
+          "type": "boolean",
+          "default": true,
+          "scope": "resource"
+        },
+        "lldb.consoleMode": {
+          "description": "Controls whether the debug console input is by default treated as debugger commands or as expressions to evaluate.",
+          "type": "string",
+          "enum": [
+            "commands",
+            "evaluate",
+            "split"
+          ],
+          "default": "commands",
+          "enumDescriptions": [
+            "Treat debug console input as debugger commands.  In order to evaluate an expression, prefix it with '?' (question mark).",
+            "Treat debug console input as expressions.  In order to execute a debugger command, prefix it with '`' (backtick).",
+            "(experimental) Use the debug console for warningevaluation of expressions, open a separate terminal for input of LLDB commands."
+          ],
+          "scope": "resource"
+        },
+        "lldb.dbgconfig": {
+          "description": "Common user-defined settings that can be inserted into launch configurations using ${dbgconfig:name} syntax.",
+          "type": "object",
+          "patternProperties": {
+            ".*": {
+              "type": [
+                "string",
+                "number",
+                "array",
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          "default": {},
+          "scope": "resource"
+        },
+        "lldb.library": {
+          "markdownDescription": "Which LLDB library to use.\n\nThis can be either a file path (recommended) or a directory, in which case platform-specific heuristics will be used to locate the actual library file.",
+          "type": "string",
+          "scope": "resource"
+        },
+        "lldb.cargo": {
+          "markdownDescription": "Name of the command to invoke as Cargo.",
+          "type": "string",
+          "scope": "resource",
+          "default": "cargo"
+        },
+        "lldb.adapterEnv": {
+          "description": "Extra environment variables for the debug adapter.",
+          "type": "object",
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          },
+          "default": {},
+          "scope": "resource"
+        },
+        "lldb.verboseLogging": {
+          "description": "Turns on verbose logging.",
+          "type": "boolean",
+          "default": false,
+          "scope": "resource"
+        },
+        "lldb.reproducer": {
+          "markdownDescription": "Enable capture of a [reproducer](https://lldb.llvm.org/design/reproducers.html).\nMay also contain a path of the directory to save the reproducer in.",
+          "type": [
+            "boolean",
+            "string"
+          ],
+          "default": false,
+          "scope": "resource"
+        },
+        "lldb.terminalPromptClear": {
+          "description": "A sequence of strings sent to the terminal in order to clear its command prompt.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": null,
+          "scope": "resource"
+        },
+        "lldb.evaluateForHovers": {
+          "description": "Enable value preview when cursor is hovering over a variable.",
+          "type": "boolean",
+          "default": true,
+          "scope": "resource"
+        },
+        "lldb.commandCompletions": {
+          "description": "Enable command completions in debug console.",
+          "type": "boolean",
+          "default": true,
+          "scope": "resource"
+        },
+        "lldb.rpcServer": {
+          "description": "Start an RPC server that will accept debug configuration requests.",
+          "type": [
+            "object",
+            "null"
+          ],
+          "default": null,
+          "scope": "window"
+        },
+        "lldb.suppressUpdateNotifications": {
+          "description": "Don't show extension update notifications.",
+          "type": "boolean",
+          "scope": "application"
         }
       }
-    }
+    },
+    "debuggers": [
+      {
+        "type": "powercpp",
+        "label": "PowerTech C/C++ debugger",
+        "languages": [
+          "c",
+          "cpp",
+          "objective-c",
+          "objective-cpp"
+        ],
+        "variables": {
+          "pickProcess": "lldb.pickProcess",
+          "pickMyProcess": "lldb.pickMyProcess"
+        },
+        "configurationAttributes": {
+          "launch": {
+            "properties": {
+              "program": {
+                "description": "Path to the program to debug.",
+                "type": "string"
+              },
+              "cargo": {
+                "description": "Cargo invocation parameters.",
+                "type": "object",
+                "properties": {
+                  "args": {
+                    "description": "Cargo command line arguments.",
+                    "type": "array",
+                    "default": [
+                      "test",
+                      "--no-run"
+                    ]
+                  },
+                  "env": {
+                    "description": "Additional environment variables passed to cargo.",
+                    "type": "object",
+                    "patternProperties": {
+                      ".*": {
+                        "type": "string"
+                      }
+                    },
+                    "default": {}
+                  },
+                  "problemMatcher": {
+                    "description": "Problem matcher(s) to apply to cargo output.",
+                    "type": [
+                      "string",
+                      "array"
+                    ]
+                  },
+                  "filter": {
+                    "description": "Filter applied to compilation artifacts.",
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "kind": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "args"
+                ]
+              },
+              "args": {
+                "description": "Program arguments.",
+                "type": [
+                  "array",
+                  "string"
+                ],
+                "default": []
+              },
+              "cwd": {
+                "description": "Program working directory.",
+                "type": "string",
+                "default": "${workspaceFolder}"
+              },
+              "env": {
+                "description": "Additional environment variables.",
+                "type": "object",
+                "patternProperties": {
+                  ".*": {
+                    "type": "string"
+                  }
+                },
+                "default": {}
+              },
+              "stdio": {
+                "description": "Destination for stdio streams: null = send to debugger console or a terminal, \"<path>\" = attach to a file/tty/fifo.",
+                "type": [
+                  "null",
+                  "string",
+                  "array",
+                  "object"
+                ],
+                "default": null
+              },
+              "terminal": {
+                "description": "Terminal type to use.",
+                "type": "string",
+                "enum": [
+                  "integrated",
+                  "external",
+                  "console"
+                ],
+                "enumDescriptions": [
+                  "Use integrated terminal in VSCode.",
+                  "Use external terminal window.",
+                  "Use VScode Debug Console for stdout and stderr. Stdin will be unavailable."
+                ],
+                "default": "integrated"
+              },
+              "console": {
+                "description": "Terminal type to use. (This setting is a compatibility alias of 'terminal'.)",
+                "type": "string",
+                "enum": [
+                  "integratedTerminal",
+                  "externalTerminal",
+                  "internalConsole"
+                ],
+                "enumDescriptions": [
+                  "Use integrated terminal in VSCode.",
+                  "Use external terminal window.",
+                  "Use VScode Debug Console for stdout and stderr. Stdin will be unavailable."
+                ]
+              },
+              "stopOnEntry": {
+                "description": "Automatically stop debuggee after launch.",
+                "type": "boolean",
+                "default": true
+              },
+              "initCommands": {
+                "description": "Initialization commands executed upon debugger startup.",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": []
+              },
+              "preRunCommands": {
+                "description": "Commands executed just before the program is launched.",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": []
+              },
+              "postRunCommands": {
+                "description": "Commands executed just after the program has been launched.",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": []
+              },
+              "exitCommands": {
+                "description": "Commands executed at the end of debugging session.",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": []
+              },
+              "expressions": {
+                "description": "The default evaluator type used for expressions.",
+                "type": "string",
+                "enum": [
+                  "simple",
+                  "python",
+                  "native"
+                ]
+              },
+              "sourceMap": {
+                "description": "Source path remapping between the build machine and the local machine.  Each item is a pair of remote and local path prefixes.",
+                "type": "object",
+                "patternProperties": {
+                  ".*": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "default": {}
+              },
+              "relativePathBase": {
+                "description": "Base directory used for resolution of relative source paths.  Defaults to \"${workspaceFolder}\".",
+                "type": "string"
+              },
+              "sourceLanguages": {
+                "description": "A list of source languages to enable language-specific features for.",
+                "type": "array",
+                "default": []
+              },
+              "reverseDebugging": {
+                "description": "Enable reverse debugging (Requires reverse execution support in the debug server, see User's Manual for details).",
+                "type": "boolean",
+                "default": false
+              }
+            },
+            "oneOf": [
+              {
+                "required": [
+                  "program"
+                ]
+              },
+              {
+                "required": [
+                  "cargo"
+                ]
+              }
+            ]
+          },
+          "attach": {
+            "properties": {
+              "program": {
+                "description": "Path to the program to attach to.",
+                "type": "string"
+              },
+              "pid": {
+                "description": "Process id to attach to.",
+                "type": [
+                  "number",
+                  "string"
+                ],
+                "default": "${command:pickMyProcess}"
+              },
+              "stopOnEntry": {
+                "description": "Automatically stop debuggee after attach.",
+                "type": "boolean",
+                "default": true
+              },
+              "waitFor": {
+                "description": "Wait for the process to launch (MacOS only).",
+                "type": "boolean",
+                "default": true
+              },
+              "initCommands": {
+                "description": "Initialization commands executed upon debugger startup.",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": []
+              },
+              "preRunCommands": {
+                "description": "Commands executed just before the program is attached to.",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": []
+              },
+              "postRunCommands": {
+                "description": "Commands executed just after the program has been attached to.",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": []
+              },
+              "exitCommands": {
+                "description": "Commands executed at the end of debugging session.",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": []
+              },
+              "expressions": {
+                "description": "The default evaluator type used for expressions.",
+                "type": "string",
+                "enum": [
+                  "simple",
+                  "python",
+                  "native"
+                ]
+              },
+              "sourceMap": {
+                "description": "Source path remapping between the build machine and the local machine.  Each item is a pair of remote and local path prefixes.",
+                "type": "object",
+                "patternProperties": {
+                  ".*": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "default": {}
+              },
+              "sourceLanguages": {
+                "description": "A list of source languages to enable language-specific features for.",
+                "type": "array",
+                "default": []
+              },
+              "reverseDebugging": {
+                "description": "Enable reverse debugging (Requires reverse execution support in the debug server, see User's Manual for details).",
+                "type": "boolean",
+                "default": false
+              }
+            }
+          },
+          "custom": {
+            "properties": {
+              "initCommands": {
+                "description": "Initialization commands executed upon debugger startup.",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": []
+              },
+              "targetCreateCommands": {
+                "description": "Commands that create a debug target.",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": []
+              },
+              "processCreateCommands": {
+                "description": "Commands that create debuggee process.",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": []
+              },
+              "exitCommands": {
+                "description": "Commands executed at the end of debugging session.",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": []
+              },
+              "expressions": {
+                "description": "The default evaluator type used for expressions.",
+                "type": "string",
+                "enum": [
+                  "simple",
+                  "python",
+                  "native"
+                ]
+              },
+              "sourceMap": {
+                "description": "Source path remapping between the build machine and the local machine.  Each item is a pair of remote and local path prefixes.",
+                "type": "object",
+                "patternProperties": {
+                  ".*": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "default": {}
+              },
+              "relativePathBase": {
+                "description": "Base directory used for resolution of relative source paths.  Defaults to \"${workspaceFolder}\".",
+                "type": "string"
+              },
+              "sourceLanguages": {
+                "description": "A list of source languages to enable language-specific features for.",
+                "type": "array",
+                "default": []
+              },
+              "reverseDebugging": {
+                "description": "Enable reverse debugging (Requires reverse execution support in the debug server, see User's Manual for details).",
+                "type": "boolean",
+                "default": false
+              },
+              "cargo": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "configurationSnippets": [
+          {
+            "label": "CodeLLDB: Launch",
+            "description": "Launch a new instance of the specified program.",
+            "body": {
+              "type": "lldb",
+              "request": "launch",
+              "name": "${2:Launch}",
+              "program": "^\"\\${workspaceFolder}/${1:<program>}\"",
+              "args": [],
+              "cwd": "^\"\\${workspaceFolder}\""
+            }
+          },
+          {
+            "label": "CodeLLDB: Attach by PID",
+            "description": "Attach to a running process with the specified process id.",
+            "body": {
+              "type": "lldb",
+              "request": "attach",
+              "name": "${2:Attach}",
+              "pid": "^\"\\${command:pickMyProcess}\" // use \\${command:pickProcess} to pick other users' processes"
+            }
+          },
+          {
+            "label": "CodeLLDB: Attach by Name",
+            "description": "Attach to a running instance of the specified program.",
+            "body": {
+              "type": "lldb",
+              "request": "attach",
+              "name": "${2:Attach}",
+              "program": "^\"\\${workspaceFolder}/${1:<program>}\""
+            }
+          },
+          {
+            "label": "CodeLLDB: Custom",
+            "description": "Launch or attach using raw LLDB commands.",
+            "body": {
+              "type": "lldb",
+              "request": "custom",
+              "name": "${2:Custom launch}",
+              "targetCreateCommands": [
+                "^\"target create \\${workspaceFolder}/${1:<program>}\""
+              ],
+              "processCreateCommands": [
+                "settings set target.run-args ${3:value1 value2 value3}",
+                "process launch"
+              ]
+            }
+          },
+          {
+            "label": "CodeLLDB: Debug a Cargo Target",
+            "description": "Debug an executable target in a Cargo package.",
+            "body": {
+              "type": "lldb",
+              "request": "launch",
+              "name": "${2:Cargo launch}",
+              "cargo": {
+                "args": [
+                  "build",
+                  "${1:--lib}"
+                ]
+              },
+              "args": []
+            }
+          },
+          {
+            "label": "CodeLLDB: Debug Cargo Tests",
+            "description": "Debug unit tests in a Cargo package.",
+            "body": {
+              "type": "lldb",
+              "request": "launch",
+              "name": "${2:Cargo test}",
+              "cargo": {
+                "args": [
+                  "test",
+                  "--no-run",
+                  "${1:--lib}"
+                ]
+              },
+              "args": []
+            }
+          }
+        ]
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
@@ -226,6 +1337,13 @@
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"
   },
+  "dependencies": {
+    "abort-controller": "^3.0.0",
+    "vscode-languageclient": "8.0.2",
+    "string-argv": "^0.3.1",
+    "yaml": "^1.10.0",
+    "yauzl": "^2.10.0"
+  },
   "devDependencies": {
     "@types/vscode": "^1.73.0",
     "@types/glob": "^8.0.0",
@@ -233,6 +1351,8 @@
     "@types/node": "16.x",
     "@typescript-eslint/eslint-plugin": "^5.42.0",
     "@typescript-eslint/parser": "^5.42.0",
+    "@vscode/debugadapter-testsupport": "^1.51.0",
+    "@vscode/debugprotocol": "^1.53.0",
     "eslint": "^8.26.0",
     "glob": "^8.0.3",
     "mocha": "^10.1.0",
