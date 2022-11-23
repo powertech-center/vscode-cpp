@@ -7,13 +7,15 @@ import { Writable } from 'stream';
 import * as async from './novsc/async';
 import { isRosetta } from './novsc/adapter';
 
+export let codelldb_path = 'thirdparty/codelldb'
+
 const MaxRedirects = 10;
 
 let activeInstallation: Promise<boolean> = null;
 
 export async function ensurePlatformPackage(context: ExtensionContext, output: OutputChannel, modal: boolean): Promise<boolean> {
 
-    if (await async.fs.exists(path.join(context.extensionPath, 'lldb/platform.ok')))
+    if (await async.fs.exists(path.join(context.extensionPath, codelldb_path, 'platform.ok')))
         return true;
 
     // Just wait if installation is already in progress.
@@ -157,7 +159,7 @@ async function download(srcUrl: Uri, destPath: string,
 }
 
 async function installVsix(context: ExtensionContext, vsixPath: string) {
-    let destDir = context.extensionPath;
+    let destDir = path.join(context.extensionPath, codelldb_path);
     await extractZip(vsixPath, async (entry) => {
         if (!entry.fileName.startsWith('extension/'))
             return null; // Skip metadata files.
@@ -169,11 +171,18 @@ async function installVsix(context: ExtensionContext, vsixPath: string) {
             (entry.fileName.endsWith('/extension.js')) ||
             (entry.fileName.endsWith('/package.json')) ||
             (entry.fileName.endsWith('/README.md')) ||
-            (entry.fileName.endsWith('/disassembly.json'))
+            (entry.fileName.endsWith('/disassembly.json')) ||
+            (entry.fileName.endsWith('/webpack.config.js')) ||
+            (entry.fileName.startsWith('extension/formatters/')) ||
+            (entry.fileName.startsWith('extension/images/'))
         )
         return null;
 
-        let destPath = path.join(destDir, entry.fileName.substr(10));
+        let fileName = entry.fileName.substr(10);
+        if (fileName.startsWith('lldb/')) {
+            fileName = fileName.substr(5);
+        }
+        let destPath = path.join(destDir, fileName);
         await ensureDirectory(path.dirname(destPath));
         let stream = fs.createWriteStream(destPath);
         stream.on('finish', () => {
@@ -182,7 +191,7 @@ async function installVsix(context: ExtensionContext, vsixPath: string) {
         });
         return stream;
     });
-    await async.fs.writeFile(path.join(destDir, 'lldb/platform.ok'), '');
+    await async.fs.writeFile(path.join(destDir, 'platform.ok'), '');
 }
 
 function extractZip(zipPath: string, callback: (entry: zip.Entry) => Promise<Writable> | null): Promise<void> {

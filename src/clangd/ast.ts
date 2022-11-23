@@ -32,13 +32,13 @@ class ASTFeature implements vscodelc.StaticFeature {
     const adapter = new TreeAdapter();
     // Create the AST view, showing data from the adapter.
     const tree =
-        vscode.window.createTreeView('clangd.ast', {treeDataProvider: adapter});
+        vscode.window.createTreeView('cpp.ast', {treeDataProvider: adapter});
     context.subscriptions.push(
         tree,
         // Ensure the AST view is visible exactly when the adapter has a node.
-        // clangd.ast.hasData controls the view visibility (package.json).
+        // cpp.ast.hasData controls the view visibility (package.json).
         adapter.onDidChangeTreeData((_) => {
-          vscode.commands.executeCommand('setContext', 'clangd.ast.hasData',
+          vscode.commands.executeCommand('setContext', 'cpp.ast.hasData',
                                          adapter.hasRoot());
           // Work around https://github.com/microsoft/vscode/issues/90005
           // Show the AST tree even if it's been collapsed or closed.
@@ -50,7 +50,7 @@ class ASTFeature implements vscodelc.StaticFeature {
         // Create the "Show AST" command for the context menu.
         // It's only shown if the feature is dynamicaly available (package.json)
         vscode.commands.registerTextEditorCommand(
-            'clangd.ast',
+            'cpp.ast',
             async (editor, _edit) => {
               const converter = this.context.client.code2ProtocolConverter;
               const item =
@@ -67,7 +67,7 @@ class ASTFeature implements vscodelc.StaticFeature {
         // Clicking "close" will empty the adapter, which in turn hides the
         // view.
         vscode.commands.registerCommand(
-            'clangd.ast.close', () => adapter.setRoot(undefined, undefined)));
+            'cpp.ast.close', () => adapter.setRoot(undefined, undefined)));
   }
 
   fillClientCapabilities(capabilities: vscodelc.ClientCapabilities) {}
@@ -75,7 +75,7 @@ class ASTFeature implements vscodelc.StaticFeature {
   // The "Show AST" command is enabled if the server advertises the capability.
   initialize(capabilities: vscodelc.ServerCapabilities,
              _documentSelector: vscodelc.DocumentSelector|undefined) {
-    vscode.commands.executeCommand('setContext', 'clangd.ast.supported',
+    vscode.commands.executeCommand('setContext', 'cpp.ast.supported',
                                    'astProvider' in capabilities);
   }
   getState(): vscodelc.FeatureState { return {kind: 'static'}; }

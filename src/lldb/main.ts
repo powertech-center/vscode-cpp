@@ -16,7 +16,6 @@ import * as htmlView from './htmlView';
 import * as util from './configUtils';
 import * as adapter from './novsc/adapter';
 import * as install from './install';
-import { Cargo, expandCargo } from './cargo';
 import { pickProcess } from './pickProcess';
 import { Dict } from './novsc/commonTypes';
 import { AdapterSettings } from './adapterMessages';
@@ -28,22 +27,22 @@ import { SimpleServer } from './simpleServer';
 
 export let output = window.createOutputChannel('LLDB');
 
-let extension: Extension;
+let dbginst: DbgExtension;
 
 // Main entry point
 export function activate(context: ExtensionContext) {
-    extension = new Extension(context);
-    extension.onActivate();
+    dbginst = new DbgExtension(context);
+    dbginst.onActivate();
 }
 
 export function deactivate() {
-    extension.onDeactivate();
+    dbginst.onDeactivate();
 }
 
-class Extension implements DebugConfigurationProvider, DebugAdapterDescriptorFactory, UriHandler {
+class DbgExtension implements DebugConfigurationProvider, DebugAdapterDescriptorFactory, UriHandler {
     context: ExtensionContext;
     htmlViewer: htmlView.DebuggerHtmlView;
-    status: StatusBarItem;
+   // status: StatusBarItem;
     loadedModules: ModuleTreeDataProvider;
     rpcServer: SimpleServer;
 
@@ -56,18 +55,11 @@ class Extension implements DebugConfigurationProvider, DebugAdapterDescriptorFac
         subscriptions.push(debug.registerDebugConfigurationProvider('powercpp', this));
         subscriptions.push(debug.registerDebugAdapterDescriptorFactory('powercpp', this));
 
-        subscriptions.push(commands.registerCommand('lldb.diagnose', () => this.runDiagnostics()));
-        subscriptions.push(commands.registerCommand('lldb.getCargoLaunchConfigs', () => this.getCargoLaunchConfigs()));
-        subscriptions.push(commands.registerCommand('lldb.pickMyProcess', () => pickProcess(context, false)));
-        subscriptions.push(commands.registerCommand('lldb.pickProcess', () => pickProcess(context, true)));
-        subscriptions.push(commands.registerCommand('lldb.changeDisplaySettings', () => this.changeDisplaySettings()));
-        subscriptions.push(commands.registerCommand('lldb.attach', () => this.attach()));
-        subscriptions.push(commands.registerCommand('lldb.alternateBackend', () => this.alternateBackend()));
-        subscriptions.push(commands.registerCommand('lldb.commandPrompt', () => this.commandPrompt()));
-        subscriptions.push(commands.registerCommand('lldb.symbols', () => pickSymbol(debug.activeDebugSession)));
-        subscriptions.push(commands.registerCommand('lldb.viewMemory', () => this.viewMemory()));
+        subscriptions.push(commands.registerCommand('cpp.dbgOpenTerminal', () => this.commandPrompt()));
+        subscriptions.push(commands.registerCommand('cpp.dbgSearchSymbols', () => pickSymbol(debug.activeDebugSession)));
+        subscriptions.push(commands.registerCommand('cpp.dbgViewMemory', () => this.viewMemory()));
 
-        subscriptions.push(workspace.onDidChangeConfiguration(event => {
+       /* subscriptions.push(workspace.onDidChangeConfiguration(event => {
             if (event.affectsConfiguration('lldb.displayFormat') ||
                 event.affectsConfiguration('powercpp.showDisassembly') ||
                 event.affectsConfiguration('lldb.dereferencePointers') ||
@@ -76,15 +68,12 @@ class Extension implements DebugConfigurationProvider, DebugAdapterDescriptorFac
                 event.affectsConfiguration('lldb.consoleMode')) {
                 this.propagateDisplaySettings();
             }
-            if (event.affectsConfiguration('lldb.library')) {
-                this.adapterDylibsCache = null;
-            }
             if (event.affectsConfiguration('lldb.rpcServer')) {
                 this.startRpcServer();
             }
-        }));
+        }));*/
 
-        this.registerDisplaySettingCommand('lldb.toggleConsoleMode', async (settings) => {
+        /*this.registerDisplaySettingCommand('lldb.toggleConsoleMode', async (settings) => {
             settings.consoleMode = (settings.consoleMode == 'commands') ? 'evaluate' : 'commands';
         });
         this.registerDisplaySettingCommand('powercpp.showDisassembly', async (settings) => {
@@ -98,9 +87,9 @@ class Extension implements DebugConfigurationProvider, DebugAdapterDescriptorFac
         });
         this.registerDisplaySettingCommand('lldb.toggleDerefPointers', async (settings) => {
             settings.dereferencePointers = !settings.dereferencePointers;
-        });
+        });*/
 
-        this.status = window.createStatusBarItem(StatusBarAlignment.Left, 0);
+        /*this.status = window.createStatusBarItem(StatusBarAlignment.Left, 0);
         this.status.command = 'lldb.changeDisplaySettings';
         this.status.tooltip = 'Change debugger display settings';
         this.status.hide();
@@ -110,7 +99,7 @@ class Extension implements DebugConfigurationProvider, DebugAdapterDescriptorFac
                 this.status.show();
             else
                 this.status.hide();
-        }));
+        }));*/
 
         this.loadedModules = new ModuleTreeDataProvider(context);
         subscriptions.push(window.registerTreeDataProvider('loadedModules', this.loadedModules));
@@ -121,24 +110,6 @@ class Extension implements DebugConfigurationProvider, DebugAdapterDescriptorFac
     }
 
     async onActivate() {
-        let pkg = extensions.getExtension('PowerTech.powercpp').packageJSON;
-        let currVersion = pkg.version;
-        let lastVersion = this.context.globalState.get('lastLaunchedVersion');
-        let lldbConfig = this.getExtensionConfig();
-        if (currVersion != lastVersion && !lldbConfig.get('suppressUpdateNotifications')) {
-            this.context.globalState.update('lastLaunchedVersion', currVersion);
-            if (lastVersion != undefined) {
-                let buttons = ['What\'s new?', 'Don\'t show this again'];
-                let choice = await window.showInformationMessage('CodeLLDB extension has been updated', ...buttons);
-                if (choice === buttons[0]) {
-                    let changelog = path.join(this.context.extensionPath, 'CHANGELOG.md')
-                    let uri = Uri.file(changelog);
-                    await commands.executeCommand('markdown.showPreview', uri, null, { locked: true });
-                } else if (choice == buttons[1]) {
-                    lldbConfig.update('suppressUpdateNotifications', true, ConfigurationTarget.Global);
-                }
-            }
-        }
         this.propagateDisplaySettings();
         install.ensurePlatformPackage(this.context, output, false);
     }
@@ -254,50 +225,50 @@ class Extension implements DebugConfigurationProvider, DebugAdapterDescriptorFac
         this.context.subscriptions.push(commands.registerCommand(command, async () => {
             let settings = this.getAdapterSettings();
             await updater(settings);
-            this.setAdapterSettings(settings);
+            //this.setAdapterSettings(settings);
         }));
     }
 
     // Read current adapter settings values from workspace configuration.
     getAdapterSettings(folder: WorkspaceFolder = undefined): AdapterSettings {
         folder = folder || debug.activeDebugSession?.workspaceFolder;
-        let config = this.getExtensionConfig(folder);
+        //let config = this.getExtensionConfig(folder);
         let settings: AdapterSettings = {
-            displayFormat: config.get('displayFormat'),
-            showDisassembly: config.get('showDisassembly'),
-            dereferencePointers: config.get('dereferencePointers'),
-            suppressMissingSourceFiles: config.get('suppressMissingSourceFiles'),
-            evaluationTimeout: config.get('evaluationTimeout'),
-            consoleMode: config.get('consoleMode'),
+            displayFormat: undefined,// config.get('displayFormat'),
+            showDisassembly: undefined,//config.get('showDisassembly'),
+            dereferencePointers: undefined,//config.get('dereferencePointers'),
+            suppressMissingSourceFiles: undefined,//config.get('suppressMissingSourceFiles'),
+            evaluationTimeout: undefined,//config.get('evaluationTimeout'),
+            consoleMode: undefined,//config.get('consoleMode'),
             sourceLanguages: null,
-            terminalPromptClear: config.get('terminalPromptClear'),
-            evaluateForHovers: config.get('evaluateForHovers'),
-            commandCompletions: config.get('commandCompletions'),
-            reproducer: config.get('reproducer'),
+            terminalPromptClear: undefined,//config.get('terminalPromptClear'),
+            evaluateForHovers: undefined,//config.get('evaluateForHovers'),
+            commandCompletions: undefined,//config.get('commandCompletions'),
+            reproducer: undefined,//config.get('reproducer'),
         };
         return settings;
     }
 
     // Update workspace configuration.
-    async setAdapterSettings(settings: AdapterSettings) {
+   /* async setAdapterSettings(settings: AdapterSettings) {
         let folder = debug.activeDebugSession?.workspaceFolder;
         let config = this.getExtensionConfig(folder);
         await config.update('displayFormat', settings.displayFormat);
         await config.update('showDisassembly', settings.showDisassembly);
         await config.update('dereferencePointers', settings.dereferencePointers);
         await config.update('consoleMode', settings.consoleMode);
-    }
+    }*/
 
     // This is called When configuration change is detected. Updates UI, and if a debug session
     // is active, pushes updated settings to the adapter as well.
     async propagateDisplaySettings() {
         let settings = this.getAdapterSettings();
 
-        this.status.text =
+        /*this.status.text =
             `Format: ${settings.displayFormat}  ` +
             `Disasm: ${settings.showDisassembly}  ` +
             `Deref: ${settings.dereferencePointers ? 'on' : 'off'}  ` +
-            `Console: ${settings.consoleMode == 'commands' ? 'cmd' : 'eval'}`;
+            `Console: ${settings.consoleMode == 'commands' ? 'cmd' : 'eval'}`;*/
 
         if (debug.activeDebugSession && debug.activeDebugSession.type == 'powercpp') {
             await debug.activeDebugSession.customRequest('_adapterSettings', settings);
@@ -305,7 +276,7 @@ class Extension implements DebugConfigurationProvider, DebugAdapterDescriptorFac
     }
 
     // UI for changing display settings.
-    async changeDisplaySettings() {
+    /*async changeDisplaySettings() {
         let settings = this.getAdapterSettings();
         let qpick = window.createQuickPick<QuickPickItem & { command: string }>();
         qpick.items = [
@@ -337,27 +308,12 @@ class Extension implements DebugConfigurationProvider, DebugAdapterDescriptorFac
             commands.executeCommand(item.command);
         });
         qpick.show();
-    }
+    }*/
 
     async provideDebugConfigurations(
         workspaceFolder: WorkspaceFolder | undefined,
         cancellation?: CancellationToken
     ): Promise<DebugConfiguration[]> {
-        try {
-            let cargo = new Cargo(workspaceFolder, cancellation);
-            let debugConfigs = await cargo.getLaunchConfigs();
-            if (debugConfigs.length > 0) {
-                let response = await window.showInformationMessage(
-                    'Cargo.toml has been detected in this workspace.\r\n' +
-                    'Would you like to generate launch configurations for its targets?', { modal: true }, 'Yes', 'No');
-                if (response == 'Yes') {
-                    return debugConfigs;
-                }
-            }
-        } catch (err) {
-            output.appendLine(err.toString());
-        }
-
         return [{
             type: 'powercpp',
             request: 'launch',
@@ -386,13 +342,12 @@ class Extension implements DebugConfigurationProvider, DebugAdapterDescriptorFac
         if (!await this.checkPrerequisites(folder))
             return undefined;
 
-        let config = this.getExtensionConfig(folder);
+        if (launchConfig.request == 'launch' && ((launchConfig.program == '') || (launchConfig.program == undefined))) {
+            // ToDo !!!
+            launchConfig.program = '${command:cmake.launchTargetPath}' 
+        }
 
-        let launchDefaults = this.getExtensionConfig(folder, 'lldb.launch');
-        launchConfig = this.mergeWorkspaceSettings(launchDefaults, launchConfig);
-
-        let dbgconfigConfig = this.getExtensionConfig(folder, 'lldb.dbgconfig');
-        launchConfig = util.expandDbgConfig(launchConfig, dbgconfigConfig);
+        //let config = this.getExtensionConfig(folder);
 
         // Transform "request":"custom" to "request":"launch" + "custom":true
         if (launchConfig.request == 'custom') {
@@ -405,25 +360,6 @@ class Extension implements DebugConfigurationProvider, DebugAdapterDescriptorFac
         }
 
         launchConfig.relativePathBase = launchConfig.relativePathBase || workspace.rootPath;
-
-        // Deal with Cargo
-        if (launchConfig.cargo != undefined) {
-            let cargo = new Cargo(folder, cancellation);
-            let program = await cargo.getProgramFromCargoConfig(launchConfig.cargo);
-            delete launchConfig.cargo;
-
-            // Expand ${cargo:program}.
-            launchConfig = expandCargo(launchConfig, { program: program });
-
-            if (launchConfig.program == undefined) {
-                launchConfig.program = program;
-            }
-
-            // Add 'rust' to sourceLanguages, since this project obviously (ha!) involves Rust.
-            if (!launchConfig.sourceLanguages)
-                launchConfig.sourceLanguages = [];
-            launchConfig.sourceLanguages.push('rust');
-        }
 
         launchConfig._adapterSettings = this.getAdapterSettings();
 
@@ -475,61 +411,14 @@ class Extension implements DebugConfigurationProvider, DebugAdapterDescriptorFac
         }
     }
 
-    // Merge launch configuration with workspace settings
-    mergeWorkspaceSettings(launchConfig: WorkspaceConfiguration, debugConfig: DebugConfiguration): DebugConfiguration {
-        let mergeConfig = (key: string, reverse: boolean = false) => {
-            let value1 = util.getConfigNoDefault(launchConfig, key);
-            let value2 = debugConfig[key];
-            let value = !reverse ? mergeValues(value1, value2) : mergeValues(value2, value1);
-            if (!util.isEmpty(value))
-                debugConfig[key] = value;
-        }
-        mergeConfig('initCommands');
-        mergeConfig('preRunCommands');
-        mergeConfig('postRunCommands');
-        mergeConfig('exitCommands', true);
-        mergeConfig('env');
-        mergeConfig('cwd');
-        mergeConfig('terminal');
-        mergeConfig('stdio');
-        mergeConfig('expressions');
-        mergeConfig('sourceMap');
-        mergeConfig('relativePathBase');
-        mergeConfig('sourceLanguages');
-        mergeConfig('debugServer');
-        return debugConfig;
-    }
-
-    async getCargoLaunchConfigs() {
-        try {
-            let folder = (workspace.workspaceFolders.length == 1) ?
-                workspace.workspaceFolders[0] :
-                await window.showWorkspaceFolderPick();
-            let cargo = new Cargo(folder);
-            let configurations = await cargo.getLaunchConfigs();
-            let debugConfigs = {
-                version: '0.2.0',
-                configurations: configurations,
-            }
-            let doc = await workspace.openTextDocument({
-                language: 'jsonc',
-                content: JSON.stringify(debugConfigs, null, 4),
-            });
-            await window.showTextDocument(doc, 1, false);
-        } catch (err) {
-            output.show();
-            window.showErrorMessage(err.toString());
-        }
-    }
-
     async startDebugAdapter(
         folder: WorkspaceFolder | undefined,
         adapterParams: Dict<string>,
         connectPort: number
     ): Promise<ChildProcess> {
-        let config = this.getExtensionConfig(folder);
-        let adapterEnv = config.get('adapterEnv', {});
-        let verboseLogging = config.get<boolean>('verboseLogging');
+        let config = this.getExtensionConfig();
+        let adapterEnv = config.get('dbgAdapterEnv', {});
+        let verboseLogging = config.get<boolean>('dbgAdapterVerbose');
         let [liblldb] = await this.getAdapterDylibs(config);
 
         if (verboseLogging) {
@@ -565,13 +454,8 @@ class Extension implements DebugConfigurationProvider, DebugAdapterDescriptorFac
     // Resolve paths of the native adapter libraries and cache them.
     async getAdapterDylibs(config: WorkspaceConfiguration): Promise<[string]> {
         if (!this.adapterDylibsCache) {
-            let liblldb = config.get<string>('library');
-            if (liblldb) {
-                liblldb = await adapter.findLibLLDB(liblldb)
-            } else {
-                liblldb = await adapter.findLibLLDB(path.join(this.context.extensionPath, 'lldb'));
-            }
-            this.adapterDylibsCache = [liblldb];
+              let liblldb = await adapter.findLibLLDB(path.join(this.context.extensionPath, install.codelldb_path));
+              this.adapterDylibsCache = [liblldb];
         }
         return this.adapterDylibsCache;
     }
@@ -620,44 +504,13 @@ class Extension implements DebugConfigurationProvider, DebugAdapterDescriptorFac
         await debug.startDebugging(undefined, debugConfig);
     }
 
-    async alternateBackend() {
-        let box = window.createInputBox();
-        box.prompt = 'Enter file name of the LLDB instance you\'d like to use. ';
-        box.onDidAccept(async () => {
-            try {
-                let dirs = await util.getLLDBDirectories(box.value);
-                if (dirs) {
-                    let libraryPath = await adapter.findLibLLDB(dirs.shlibDir);
-                    if (libraryPath) {
-                        let choice = await window.showInformationMessage(
-                            `Located liblldb at: ${libraryPath}\r\nUse it to configure the current workspace?`,
-                            { modal: true }, 'Yes'
-                        );
-                        if (choice == 'Yes') {
-                            box.hide();
-                            let lldbConfig = this.getExtensionConfig();
-                            lldbConfig.update('library', libraryPath, ConfigurationTarget.Workspace);
-                        } else {
-                            box.show();
-                        }
-                    }
-                }
-            } catch (err) {
-                let message = (err.code == 'ENOENT') ? `could not find "${err.path}".` : err.message;
-                await window.showErrorMessage(`Failed to query LLDB for library location: ${message}`, { modal: true });
-                box.show();
-            }
-        });
-        box.show();
-    }
-
     commandPrompt() {
         let lldb = os.platform() != 'win32' ? 'lldb' : 'lldb.exe';
-        let lldbPath = path.join(this.context.extensionPath, 'lldb', 'bin', lldb);
-        let consolePath = path.join(this.context.extensionPath, 'adapter', 'scripts', 'console.py');
+        let lldbPath = path.join(this.context.extensionPath, install.codelldb_path, 'bin', lldb);
+        let consolePath = path.join(this.context.extensionPath, adapter.adapter_path, 'scripts', 'console.py');
         let folder = workspace.workspaceFolders[0];
-        let config = this.getExtensionConfig(folder);
-        let env = adapter.getAdapterEnv(config.get('adapterEnv', {}));
+        let config = this.getExtensionConfig();
+        let env = adapter.getAdapterEnv(config.get('dbgAdapterEnv', {}));
 
         let terminal = window.createTerminal({
             name: 'LLDB Command Prompt',
@@ -691,8 +544,11 @@ class Extension implements DebugConfigurationProvider, DebugAdapterDescriptorFac
         });
     }
 
-    getExtensionConfig(folder?: WorkspaceFolder, key: string = 'powercpp'): WorkspaceConfiguration {
+    /*getExtensionConfig(folder?: WorkspaceFolder, key: string = 'powercpp'): WorkspaceConfiguration {
         return workspace.getConfiguration(key, folder?.uri);
+    }*/
+    getExtensionConfig(): WorkspaceConfiguration {
+        return workspace.getConfiguration('cpp');
     }
 }
 

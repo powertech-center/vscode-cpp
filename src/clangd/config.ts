@@ -1,9 +1,9 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-// Gets the config value `clangd.<key>`. Applies ${variable} substitutions.
+// Gets the config value `cpp.<key>`. Applies ${variable} substitutions.
 export function get<T>(key: string): T {
-  return substitute(vscode.workspace.getConfiguration('clangd').get<T>(key)!);
+  return substitute(vscode.workspace.getConfiguration('cpp').get<T>(key)!);
 }
 
 // Like get(), but won't load settings from workspace config unless the user has
@@ -47,10 +47,10 @@ export async function getSecureOrPrompt<T>(
   return prop.get(false)!;
 }
 
-// Sets the config value `clangd.<key>`. Does not apply substitutions.
+// Sets the config value `cpp.<key>`. Does not apply substitutions.
 export function update<T>(key: string, value: T,
                           target?: vscode.ConfigurationTarget) {
-  return vscode.workspace.getConfiguration('clangd').update(key, value, target);
+  return vscode.workspace.getConfiguration('cpp').update(key, value, target);
 }
 
 // Traverse a JSON value, replacing placeholders in all strings.
@@ -113,7 +113,7 @@ class SecureProperty<T> {
   blessKey: string;
 
   constructor(key: string, private workspaceState: vscode.Memento) {
-    const cfg = vscode.workspace.getConfiguration('clangd');
+    const cfg = vscode.workspace.getConfiguration('cpp');
     const inspect = cfg.inspect<T>(key)!;
     this.secure = inspect.globalValue ?? inspect.defaultValue;
     this.insecure = cfg.get<T>(key);

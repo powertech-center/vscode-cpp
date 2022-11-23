@@ -5,9 +5,9 @@ import {ClangdContext} from './clangd-context';
 import * as config from './config';
 
 export function activate(context: ClangdContext) {
-  if (config.get<string>('onConfigChanged') !== 'ignore') {
+ /* if (config.get<string>('onConfigChanged') !== 'ignore') {
     context.client.registerFeature(new ConfigFileWatcherFeature(context));
-  }
+  }*/
 }
 
 // Clangd extension capabilities.
@@ -80,9 +80,9 @@ class ConfigFileWatcher implements vscode.Disposable {
     if ((await vscode.workspace.fs.stat(uri)).size <= 0)
       return;
 
-    switch (config.get<string>('onConfigChanged')) {
+    /*switch (config.get<string>('onConfigChanged')) {
     case 'restart':
-      vscode.commands.executeCommand('clangd.restart');
+      vscode.commands.executeCommand('cpp.lsprestart');
       break;
     case 'ignore':
       break;
@@ -93,10 +93,10 @@ class ConfigFileWatcher implements vscode.Disposable {
               uri.fsPath}' has been changed. Do you want to restart it?`,
           'Yes', 'Yes, always', 'No, never')) {
       case 'Yes':
-        vscode.commands.executeCommand('clangd.restart');
+        vscode.commands.executeCommand('cpp.lsprestart');
         break;
       case 'Yes, always':
-        vscode.commands.executeCommand('clangd.restart');
+        vscode.commands.executeCommand('cpp.lsprestart');
         config.update<string>('onConfigChanged', 'restart',
                               vscode.ConfigurationTarget.Global);
         break;
@@ -108,6 +108,6 @@ class ConfigFileWatcher implements vscode.Disposable {
         break;
       }
       break;
-    }
+    }*/
   }
 }

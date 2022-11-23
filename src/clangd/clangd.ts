@@ -16,18 +16,18 @@ export async function activate(context: vscode.ExtensionContext) {
   // An empty place holder for the activate command, otherwise we'll get an
   // "command is not registered" error.
  /* context.subscriptions.push(
-      vscode.commands.registerCommand('clangd.activate', async () => {}));
+      vscode.commands.registerCommand('clangd.activate', async () => {}));*/
   context.subscriptions.push(
-      vscode.commands.registerCommand('clangd.restart', async () => {
+      vscode.commands.registerCommand('cpp.lsprestart', async () => {
         await clangdContext.dispose();
         await clangdContext.activate(context.globalStoragePath, outputChannel,
                                      context.workspaceState);
       }));
-*/
+
   await clangdContext.activate(context.globalStoragePath, outputChannel,
                                context.workspaceState);
 
-  const shouldCheck = vscode.workspace.getConfiguration('clangd').get(
+ /* const shouldCheck = vscode.workspace.getConfiguration('clangd').get(
       'detectExtensionConflicts');
   if (shouldCheck) {
     const interval = setInterval(function() {
@@ -59,5 +59,5 @@ export async function activate(context: vscode.ExtensionContext) {
         }
       }
     }, 5000);
-  }
+  }*/
 }

@@ -8,7 +8,7 @@ import * as fileStatus from './file-status';
 import * as inlayHints from './inlay-hints';
 //import * as install from './install';
 import * as memoryUsage from './memory-usage';
-import * as openConfig from './open-config';
+//import * as openConfig from './open-config';
 import * as switchSourceHeader from './switch-source-header';
 import * as typeHierarchy from './type-hierarchy';
 
@@ -61,7 +61,7 @@ export class ClangdContext implements vscode.Disposable {
 
   async activate(globalStoragePath: string, outputChannel: vscode.OutputChannel,
                  workspaceState: vscode.Memento) {
-    const clangdPath = 'clangd' //'C:/mingw64/bin/clangd.exe' // ToDo!!!
+    const clangdPath = 'clangd' // clangd.path // ToDo!!!
        // await install.activate(this, globalStoragePath, workspaceState);
     if (!clangdPath)
       return;
@@ -69,10 +69,10 @@ export class ClangdContext implements vscode.Disposable {
     const clangd: vscodelc.Executable = {
       command: clangdPath,
       args:
-          await config.getSecureOrPrompt<string[]>('arguments', workspaceState),
+          await config.getSecureOrPrompt<string[]>('LSP_args', workspaceState),
       options: {cwd: vscode.workspace.rootPath || process.cwd()}
     };
-    const traceFile = config.get<string>('trace');
+    const traceFile = "" // config.get<string>('trace');
     if (!!traceFile) {
       const trace = {CLANGD_TRACE: traceFile};
       clangd.options = {env: {...process.env, ...trace}};
@@ -84,7 +84,7 @@ export class ClangdContext implements vscode.Disposable {
       documentSelector: clangdDocumentSelector,
       initializationOptions: {
         clangdFileStatus: true,
-        fallbackFlags: config.get<string[]>('fallbackFlags')
+        fallbackFlags: [] //config.get<string[]>('fallbackFlags')
       },
       outputChannel: outputChannel,
       // Do not switch to output window when clangd returns output.
@@ -108,8 +108,8 @@ export class ClangdContext implements vscode.Disposable {
         provideCompletionItem: async (document, position, context, token,
                                       next) => {
           let list = await next(document, position, context, token);
-          if (!config.get<boolean>('serverCompletionRanking'))
-            return list;
+          //if (!config.get<boolean>('serverCompletionRanking'))
+          //  return list;
           let items = (Array.isArray(list) ? list : list!.items).map(item => {
             // Gets the prefix used by VSCode when doing fuzzymatch.
             let prefix = document.getText(
@@ -156,13 +156,13 @@ export class ClangdContext implements vscode.Disposable {
     this.client.clientOptions.errorHandler =
         this.client.createDefaultErrorHandler(
             // max restart count
-            config.get<boolean>('restartAfterCrash') ? /*default*/ 4 : 0);
+            4);//config.get<boolean>('restartAfterCrash') ? /*default*/ 4 : 0);
     this.client.registerFeature(new EnableEditsNearCursorFeature);
     typeHierarchy.activate(this);
     inlayHints.activate(this);
     memoryUsage.activate(this);
     ast.activate(this);
-    openConfig.activate(this);
+    //openConfig.activate(this);
     this.client.start();
     console.log('Clang Language Server is now active!');
     fileStatus.activate(this);

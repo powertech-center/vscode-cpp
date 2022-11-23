@@ -5,7 +5,7 @@ import {ClangdContext} from './clangd-context';
 
 export function activate(context: ClangdContext) {
   context.subscriptions.push(vscode.commands.registerCommand(
-      'clangd.switchheadersource', () => switchSourceHeader(context.client)));
+      'cpp.switchheadersource', () => switchSourceHeader(context.client)));
 }
 
 namespace SwitchSourceHeaderRequest {

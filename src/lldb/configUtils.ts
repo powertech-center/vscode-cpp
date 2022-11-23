@@ -4,55 +4,6 @@ import * as async from './novsc/async';
 import { Dict } from './novsc/commonTypes';
 import {expandVariablesInObject } from './novsc/expand';
 
-// Expands variable references of the form ${dbgconfig:name} in all properties of launch configuration.
-export function expandDbgConfig(debugConfig: DebugConfiguration, dbgconfigConfig: WorkspaceConfiguration): DebugConfiguration {
-    let dbgconfig: Dict<any> = Object.assign({}, dbgconfigConfig);
-
-    // Compute fixed-point of expansion of dbgconfig properties.
-    let expanding = '';
-    let converged = true;
-    let expander = (type: string, key: string) => {
-        if (type == 'dbgconfig') {
-            if (key == expanding)
-                throw new Error('Circular dependency detected during expansion of dbgconfig:' + key);
-            let value = dbgconfig[key];
-            if (value == undefined)
-                throw new Error('dbgconfig:' + key + ' is not defined');
-            converged = false;
-            return value.toString();
-        }
-        return null;
-    };
-    do {
-        converged = true;
-        for (let prop of Object.keys(dbgconfig)) {
-            expanding = prop;
-            dbgconfig[prop] = expandVariablesInObject(dbgconfig[prop], expander);
-        }
-    } while (!converged);
-
-    // Now expand dbgconfigs in the launch configuration.
-    debugConfig = expandVariablesInObject(debugConfig, (type, key) => {
-        if (type == 'dbgconfig') {
-            let value = dbgconfig[key];
-            if (value == undefined)
-                throw new Error('dbgconfig:' + key + ' is not defined');
-            return value.toString();
-        }
-        return null;
-    });
-    return debugConfig;
-}
-
-export function getConfigNoDefault(config: WorkspaceConfiguration, key: string): any {
-    let x = config.inspect(key);
-    let value = x.workspaceFolderValue;
-    if (value === undefined)
-        value = x.workspaceValue;
-    if (value === undefined)
-        value = x.globalValue;
-    return value;
-}
 
 export function isEmpty(obj: any): boolean {
     if (obj === null || obj === undefined)
@@ -74,13 +25,6 @@ export function logProcessOutput(process: cp.ChildProcess, output: OutputChannel
         output.append(chunk.toString());
     });
 }
-
-export function setIfDefined(target: Dict<any>, config: WorkspaceConfiguration, key: string) {
-    let value = getConfigNoDefault(config, key);
-    if (value !== undefined)
-        target[key] = value;
-}
-
 
 export interface LLDBDirectories {
     shlibDir: string;

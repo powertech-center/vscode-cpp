@@ -32,7 +32,7 @@ export class ModuleTreeDataProvider implements TreeDataProvider<Element> {
         context.subscriptions.push(debug.registerDebugAdapterTrackerFactory('powercpp', this));
         context.subscriptions.push(debug.onDidStartDebugSession(this.onStartDebugSession, this));
         context.subscriptions.push(debug.onDidChangeActiveDebugSession(this.onChangedActiveDebugSession, this));
-        context.subscriptions.push(commands.registerCommand('lldb.modules.copyValue', (arg) => this.copyValue(arg)));
+        context.subscriptions.push(commands.registerCommand('cpp.dbgModules.copyValue', (arg) => this.copyValue(arg)));
     }
 
     modulesForSession(sessionId: string): Module[] {
@@ -73,7 +73,7 @@ export class ModuleTreeDataProvider implements TreeDataProvider<Element> {
     getTreeItem(element: Element): TreeItem {
         if (element instanceof ModuleProperty) {
             let item = new TreeItem(`${element.key}: ${element.value}`);
-            item.contextValue = 'lldb.moduleProperty';
+            item.contextValue = 'cpp.dbgModuleProperty';
             return item;
         } else {
             let module = <Module>element;

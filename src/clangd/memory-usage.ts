@@ -1,9 +1,9 @@
 // Implements the "memory usage" feature.
 // When the server advertises `memoryUsageProvider`, a command
-// (clangd.memoryUsage) is available (context variable:
-// clangd.memoryUsage.supported). It sends the $/memoryUsage request and
-// displays the result in a tree view (clangd.memoryUsage) which becomes visible
-// (context: clangd.memoryUsage.hasData)
+// (cpp.memoryUsage) is available (context variable:
+// cpp.memoryUsage.supported). It sends the $/memoryUsage request and
+// displays the result in a tree view (cpp.memoryUsage) which becomes visible
+// (context: cpp.memoryUsage.hasData)
 
 import * as vscode from 'vscode';
 import * as vscodelc from 'vscode-languageclient/node';
@@ -52,18 +52,18 @@ class MemoryUsageFeature implements vscodelc.StaticFeature {
   constructor(private context: ClangdContext) {
     const adapter = new TreeAdapter();
     adapter.onDidChangeTreeData((e) => vscode.commands.executeCommand(
-                                    'setContext', 'clangd.memoryUsage.hasData',
+                                    'setContext', 'cpp.memoryUsage.hasData',
                                     adapter.root !== undefined));
     this.context.subscriptions.push(
-        vscode.window.registerTreeDataProvider('clangd.memoryUsage', adapter));
+        vscode.window.registerTreeDataProvider('cpp.memoryUsage', adapter));
     this.context.subscriptions.push(
-        vscode.commands.registerCommand('clangd.memoryUsage', async () => {
+        vscode.commands.registerCommand('cpp.memoryUsage', async () => {
           const usage =
               await this.context.client.sendRequest(MemoryUsageRequest, {});
           adapter.root = convert(usage, '<root>');
         }));
     this.context.subscriptions.push(vscode.commands.registerCommand(
-        'clangd.memoryUsage.close', () => adapter.root = undefined));
+        'cpp.memoryUsage.close', () => adapter.root = undefined));
   }
 
   fillClientCapabilities(capabilities: vscodelc.ClientCapabilities) {}
@@ -71,7 +71,7 @@ class MemoryUsageFeature implements vscodelc.StaticFeature {
 
   initialize(capabilities: vscodelc.ServerCapabilities,
              _documentSelector: vscodelc.DocumentSelector|undefined) {
-    vscode.commands.executeCommand('setContext', 'clangd.memoryUsage.supported',
+    vscode.commands.executeCommand('setContext', 'cpp.memoryUsage.supported',
                                    'memoryUsageProvider' in capabilities);
   }
   getState(): vscodelc.FeatureState { return {kind: 'static'}; }

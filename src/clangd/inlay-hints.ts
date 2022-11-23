@@ -53,10 +53,10 @@ class InlayHintsFeature implements vscodelc.StaticFeature {
     const serverCapabilities: vscodelc.ServerCapabilities&
         {clangdInlayHintsProvider?: boolean, inlayHintProvider?: any} =
         capabilities;
-    vscode.commands.executeCommand(
+    /*vscode.commands.executeCommand(
         'setContext', 'clangd.inlayHints.supported',
         serverCapabilities.clangdInlayHintsProvider ||
-            serverCapabilities.inlayHintProvider);
+            serverCapabilities.inlayHintProvider);*/
     if (!this.commandRegistered) {
       // The command provides a quick way to toggle inlay hints
       // (key-bindable).
@@ -64,9 +64,9 @@ class InlayHintsFeature implements vscodelc.StaticFeature {
       // command. We toggle it globally, language-specific is nicer but
       // undiscoverable.
       this.commandRegistered = true;
-      const enabledSetting = 'editor.inlayHints.enabled';
+      /*const enabledSetting = 'editor.inlayHints.enabled';
       this.context.subscriptions.push(
-          vscode.commands.registerCommand('clangd.inlayHints.toggle', () => {
+          vscode.commands.registerCommand('cpp.inlayHints.toggle', () => {
             // This used to be a boolean, and then became a 4-state enum.
             var val = vscode.workspace.getConfiguration().get<boolean|string>(
                 enabledSetting, 'on');
@@ -82,7 +82,7 @@ class InlayHintsFeature implements vscodelc.StaticFeature {
               return;
             vscode.workspace.getConfiguration().update(
                 enabledSetting, val, vscode.ConfigurationTarget.Global);
-          }));
+          }));*/
     }
     // If the clangd server supports LSP 3.17 inlay hints, these are handled by
     // the vscode-languageclient library - don't send custom requests too!

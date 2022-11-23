@@ -6,6 +6,8 @@ import { Readable } from 'stream';
 import { Dict, Environment } from './commonTypes';
 import { mergedEnvironment } from './expand';
 
+export let adapter_path = 'thirdparty/codelldb/adapter'
+
 export interface AdapterStartOptions {
     extensionRoot: string;
     workDir: string;
@@ -27,7 +29,7 @@ export async function getSpawnParams(
     options: AdapterStartOptions
 ): Promise<ProcessSpawnParams> {
 
-    let executable = path.join(options.extensionRoot, 'adapter', 'codelldb');
+    let executable = path.join(options.extensionRoot, adapter_path, 'codelldb');
     let portAction = options.connect ? '--connect' : '--port';
     let args = ['--liblldb', liblldb, portAction, options.port.toString()];
     if (options.adapterParameters) {
