@@ -15,7 +15,6 @@ import stringArgv from 'string-argv';
 import * as htmlView from './htmlView';
 import * as util from './configUtils';
 import * as adapter from './novsc/adapter';
-import * as install from './install';
 import { pickProcess } from './pickProcess';
 import { Dict } from './novsc/commonTypes';
 import { AdapterSettings } from './adapterMessages';
@@ -25,6 +24,7 @@ import { pickSymbol } from './symbols';
 import { ReverseAdapterConnector } from './novsc/reverseConnector';
 import { SimpleServer } from './simpleServer';
 
+export let codelldb_path = 'thirdparty/codelldb'
 export let output = window.createOutputChannel('LLDB');
 
 let dbginst: DbgExtension;
@@ -111,7 +111,7 @@ class DbgExtension implements DebugConfigurationProvider, DebugAdapterDescriptor
 
     async onActivate() {
         this.propagateDisplaySettings();
-        install.ensurePlatformPackage(this.context, output, false);
+        //install.ensurePlatformPackage(this.context, output, false);
     }
 
     onDeactivate() {
@@ -454,7 +454,7 @@ class DbgExtension implements DebugConfigurationProvider, DebugAdapterDescriptor
     // Resolve paths of the native adapter libraries and cache them.
     async getAdapterDylibs(config: WorkspaceConfiguration): Promise<[string]> {
         if (!this.adapterDylibsCache) {
-              let liblldb = await adapter.findLibLLDB(path.join(this.context.extensionPath, install.codelldb_path));
+              let liblldb = await adapter.findLibLLDB(path.join(this.context.extensionPath, codelldb_path));
               this.adapterDylibsCache = [liblldb];
         }
         return this.adapterDylibsCache;
@@ -462,8 +462,8 @@ class DbgExtension implements DebugConfigurationProvider, DebugAdapterDescriptor
     adapterDylibsCache: [string] = null;
 
     async checkPrerequisites(folder?: WorkspaceFolder): Promise<boolean> {
-        if (!await install.ensurePlatformPackage(this.context, output, true))
-            return false;
+        //if (!await install.ensurePlatformPackage(this.context, output, true))
+        //    return false;
         return true;
     }
 
@@ -506,7 +506,7 @@ class DbgExtension implements DebugConfigurationProvider, DebugAdapterDescriptor
 
     commandPrompt() {
         let lldb = os.platform() != 'win32' ? 'lldb' : 'lldb.exe';
-        let lldbPath = path.join(this.context.extensionPath, install.codelldb_path, 'bin', lldb);
+        let lldbPath = path.join(this.context.extensionPath, codelldb_path, 'bin', lldb);
         let consolePath = path.join(this.context.extensionPath, adapter.adapter_path, 'scripts', 'console.py');
         let folder = workspace.workspaceFolders[0];
         let config = this.getExtensionConfig();

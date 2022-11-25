@@ -12,6 +12,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         
+      - name: Version
+        run: |
+          version=$(pwsh -c 'echo (Get-Date -Format "yy.MM.dd" -AsUTC)')
+          echo $version
+          echo "version=${version}" >> $GITHUB_ENV
+          echo "vversion=v${version}" >> $GITHUB_ENV        
+        
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
@@ -24,13 +31,26 @@ jobs:
       
       #- name: Testing
       #  run: xvfb-run -a npm test
-        
-      - name: Binaries
+                
+      - name: Thirdparty Downloading
         run: |
-          pip install requests
-          python ./binaries.py
+          pwsh ./thirdpatry-assets.ps1
+          message=$(git log -1 HEAD --pretty=format:%s)
+          allversions=$(cat assets/versions.txt) 
+          echo "release_name=${message} (${allversions})" >> $GITHUB_ENV         
+        
+      - name: Thirdparty Releasing
+        uses: meeDamian/github-release@2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ env.vversion }}
+          name: ${{ env.vversion }}
+          body: ${{ env.release_name }}
+          gzip: false
+          allow_override: true
+          files: assets/*  
         
       - name: Publishing
         env:
           VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
-        run: python ./publish.py
+        run: pwsh ./publish.ps1
