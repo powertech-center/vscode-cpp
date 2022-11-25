@@ -183,7 +183,7 @@ async function actualizeThirdparty(context: vscode.ExtensionContext): Promise<Bo
 
 	// thirdparty archive URL
 	let archive_name = "thirdparty-" + platform + ".zip"
-	let projectUrl = "https://github.com/d-mozulyov/dummy-thirdparty" // ToDo
+	let projectUrl = "https://github.com/powertech-center/vscode-cpp"
 	let version = vscode.extensions.getExtension('PowerTech.powercpp').packageJSON.version
 	if (version == "0.0.0") {
 		let response = await async.https.get(projectUrl + "/releases/latest");
