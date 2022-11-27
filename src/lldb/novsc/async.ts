@@ -20,7 +20,7 @@ export namespace cp {
 }
 
 export namespace https {
-    export function get(url: string | URL): Promise<_http.IncomingMessage> {
+    export function get(url: string /*| URL*/): Promise<_http.IncomingMessage> {
         return new Promise<_http.IncomingMessage>((resolve, reject) => {
             let request = _https.get(url, resolve);
             request.on('error', reject);

@@ -34,7 +34,7 @@ jobs:
                 
       - name: Thirdparty Downloading
         run: |
-          pwsh ./thirdpatry-assets.ps1
+          pwsh ./thirdparty-assets.ps1
           message=$(git log -1 HEAD --pretty=format:%s)
           allversions=$(cat assets/versions.txt) 
           echo "release_name=${message} (${allversions})" >> $GITHUB_ENV         

@@ -6,6 +6,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yauzl from 'yauzl';
 import * as cmakesyntax from "./cmake/cmake-syntax";
+import * as __cmake from "./cmake/__cmake";
 import * as cmake from "./cmake/cmake";
 import * as clangd from "./clangd/clangd";
 import * as lldb from "./lldb/main";
@@ -86,12 +87,14 @@ const unzip = (zipPath: string, unzipToDir: string) => {
                                     return;
                                 }
 
-                                const file = fs.createWriteStream(path.join(unzipToDir, entry.fileName));
+								const filename = path.join(unzipToDir, entry.fileName)
+                                const file = fs.createWriteStream(filename);
                                 readStream.pipe(file);
                                 file.on('finish', () => {
                                     // Wait until the file is finished writing, then read the next entry.
                                     // @ts-ignore: Typing for close() is wrong.
                                     file.close(() => {
+										fs.chmod(filename, (entry.externalFileAttributes >> 16) & 0o7777, (err) => { });
                                         zipFile.readEntry();
                                     });
 
@@ -203,7 +206,7 @@ async function actualizeThirdparty(context: vscode.ExtensionContext): Promise<Bo
             async (progress) => {
                 let lastPercentage = 0;
                 let reportProgress = (downloaded: number, contentLength: number) => {
-                    let percentage = Math.round(downloaded / contentLength * 91);
+                    let percentage = Math.round(downloaded / contentLength * 90);
                     progress.report({
                         message: `${percentage}%`,
                         increment: percentage - lastPercentage
@@ -323,13 +326,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<Boolea
 		vscode.window.showInformationMessage('cpp.gypDebug command running');
 	}));
 
-	/*
 	// CMake syntax
 	cmakesyntax.activate(context)
 
 	// CMake commands
-	cmake.activate(context)
-	*/
+	__cmake.activate(context)
+	cmake.activate(context)	
+	
 
 	// Ninja commands
 	context.subscriptions.push(vscode.commands.registerCommand('cpp.ninjaClean', () => {
