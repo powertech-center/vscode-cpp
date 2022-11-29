@@ -3,7 +3,7 @@ import * as chokidar from 'chokidar';
 import * as yaml from 'js-yaml';
 import * as json5 from 'json5';
 import * as path from 'path';
-import * as telemetry from './telemetry';
+//import * as telemetry from './telemetry';
 import * as vscode from 'vscode';
 
 import { ConfigurationReader } from './config';
@@ -391,14 +391,14 @@ export class VariantManager implements vscode.Disposable {
             }
 
             const cfg = vscode.workspace.getConfiguration('cmake', this.folder.uri).inspect<object>('defaultVariants');
-            const telemetryProperties: telemetry.Properties = {
+            /*const telemetryProperties: telemetry.Properties = {
                 customFile: (this.customVariantsFileExists).toString(),
                 customSetting: (cfg?.globalValue !== undefined ||
                     cfg?.workspaceValue !== undefined ||
                     cfg?.workspaceFolderValue !== undefined).toString()
             };
 
-            telemetry.logEvent('variantSelection', telemetryProperties);
+            telemetry.logEvent('variantSelection', telemetryProperties);*/
 
             await this.publishActiveKeywordSettings(chosen.keywordSettings);
             return true;

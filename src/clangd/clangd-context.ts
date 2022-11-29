@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as vscodelc from 'vscode-languageclient/node';
+import * as toolchain from '../toolchain';
 
 import * as ast from './ast';
 import * as config from './config';
@@ -61,10 +62,10 @@ export class ClangdContext implements vscode.Disposable {
 
   async activate(globalStoragePath: string, outputChannel: vscode.OutputChannel,
                  workspaceState: vscode.Memento) {
-    const clangdPath = 'clangd' // clangd.path // ToDo!!!
+    const clangdPath = toolchain.isValid ? toolchain.clangdPath : 'clangd'
        // await install.activate(this, globalStoragePath, workspaceState);
-    if (!clangdPath)
-      return;
+    //if (!clangdPath)
+    //  return;
 
     const clangd: vscodelc.Executable = {
       command: clangdPath,

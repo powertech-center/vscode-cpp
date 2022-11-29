@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import * as telemetry from './telemetry';
+//import * as telemetry from './telemetry';
 import * as api from './api';
 import * as util from './util';
 
@@ -66,7 +66,7 @@ export class ConfigurationWebview {
     // Save from the UI table into the CMake cache file if there are any unsaved edits.
     async persistCacheEntries() {
         if (this.isDirty) {
-            telemetry.logEvent("editCMakeCache", { command: "saveCMakeCacheUI" });
+           // telemetry.logEvent("editCMakeCache", { command: "saveCMakeCacheUI" });
             await this.saveCmakeCache(this.options);
             void vscode.window.showInformationMessage(localize('cmake.cache.saved', 'CMake options have been saved.'));
             // start configure

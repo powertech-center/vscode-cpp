@@ -12,7 +12,7 @@ import { getCMakeToolsForActiveFolder } from './cmake';
 import { CMakeTools, ConfigureTrigger } from './cmakeTools';
 import * as preset from './preset';
 import { UseCMakePresets } from './config';
-import * as telemetry from './telemetry';
+//import * as telemetry from './telemetry';
 
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
@@ -285,7 +285,7 @@ export class CustomBuildTaskTerminal implements vscode.Pseudoterminal, proc.Outp
         if (!cmakeTools || !await this.isTaskCompatibleWithPresets(cmakeTools)) {
             return;
         }
-        telemetry.logEvent("task", {taskType: "configure", useCMakePresets: String(cmakeTools.useCMakePresets)});
+        //telemetry.logEvent("task", {taskType: "configure", useCMakePresets: String(cmakeTools.useCMakePresets)});
         await this.correctTargets(cmakeTools, CommandType.config);
         const cmakeDriver: CMakeDriver | undefined = (await cmakeTools?.getCMakeDriverInstance()) || undefined;
         if (cmakeDriver) {
@@ -323,7 +323,7 @@ export class CustomBuildTaskTerminal implements vscode.Pseudoterminal, proc.Outp
             }
         }
         if (generateLog) {
-            telemetry.logEvent("task", {taskType: commandType, useCMakePresets: String(cmakeTools.useCMakePresets)});
+            //telemetry.logEvent("task", {taskType: commandType, useCMakePresets: String(cmakeTools.useCMakePresets)});
         }
         targets = await this.correctTargets(cmakeTools, commandType);
         const cmakeDriver: CMakeDriver | undefined = (await cmakeTools?.getCMakeDriverInstance()) || undefined;
@@ -400,7 +400,7 @@ export class CustomBuildTaskTerminal implements vscode.Pseudoterminal, proc.Outp
         if (!cmakeTools || !await this.isTaskCompatibleWithPresets(cmakeTools)) {
             return;
         }
-        telemetry.logEvent("task", {taskType: "test", useCMakePresets: String(cmakeTools.useCMakePresets)});
+        //telemetry.logEvent("task", {taskType: "test", useCMakePresets: String(cmakeTools.useCMakePresets)});
         await this.correctTargets(cmakeTools, CommandType.test);
         const cmakeDriver: CMakeDriver | undefined = (await cmakeTools?.getCMakeDriverInstance()) || undefined;
         if (cmakeDriver) {
@@ -435,7 +435,7 @@ export class CustomBuildTaskTerminal implements vscode.Pseudoterminal, proc.Outp
         if (!cmakeTools || !await this.isTaskCompatibleWithPresets(cmakeTools)) {
             return;
         }
-        telemetry.logEvent("task", {taskType: "cleanRebuild", useCMakePresets: String(cmakeTools.useCMakePresets)});
+        //telemetry.logEvent("task", {taskType: "cleanRebuild", useCMakePresets: String(cmakeTools.useCMakePresets)});
         const cleanResult = await this.runBuildTask(CommandType.clean, false, false, cmakeTools);
         if (cleanResult === 0) {
             await this.runBuildTask(CommandType.build, true, false, cmakeTools);

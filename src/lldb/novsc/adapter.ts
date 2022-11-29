@@ -76,47 +76,6 @@ export async function start(
     return cp.spawn(spawnParams.command, spawnParams.args, spawnParams.options);
 }
 
-export async function findLibLLDB(pathHint: string): Promise<string | null> {
-    let stat = await async.fs.stat(pathHint);
-    if (stat.isFile())
-        return pathHint;
-
-    let libDir;
-    let pattern;
-    if (process.platform == 'linux') {
-        libDir = path.join(pathHint, 'lib');
-        pattern = /liblldb.*\.so.*/;
-    } else if (process.platform == 'darwin') {
-        libDir = path.join(pathHint, 'lib');
-        pattern = /liblldb\..*dylib|LLDB/;
-    } else if (process.platform == 'win32') {
-        libDir = path.join(pathHint, 'bin');
-        pattern = /liblldb\.dll/;
-    }
-
-    for (let dir of [pathHint, libDir]) {
-        let file = await findFileByPattern(dir, pattern);
-        if (file) {
-            return path.join(dir, file);
-        }
-    }
-    return null;
-}
-
-async function findFileByPattern(path: string, pattern: RegExp): Promise<string | null> {
-    try {
-        let files = await async.fs.readdir(path);
-        for (let file of files) {
-            if (pattern.test(file))
-                return file;
-        }
-    }
-    catch (err) {
-        // Ignore missing diractories and such...
-    }
-    return null;
-}
-
 export function getAdapterEnv(extraEnv: Dict<string>): Environment {
     let env = mergedEnvironment(extraEnv);
     // Scrub backlisted environment entries, unless they were added explicitly via extraEnv.

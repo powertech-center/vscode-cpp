@@ -88,14 +88,14 @@ export class StateManager {
     /**
      * The name of the workspace-local active kit.
      */
-    get activeKitName(): string | null {
+   /* get activeKitName(): string | null {
         const kit = this._get<string>('activeKitName');
         return kit || null;
     }
 
     async setActiveKitName(v: string | null) {
         await this._update('activeKitName', v);
-    }
+    }*/
 
     /**
      * The currently select build target
@@ -148,7 +148,7 @@ export class StateManager {
         await this.setActiveVariantSettings(null);
         await this.setLaunchTargetName(null);
         await this.setDefaultBuildTarget(null);
-        await this.setActiveKitName(null);
+        //await this.setActiveKitName(null);
         await this.setIgnoreCMakeListsMissing(false);
     }
 }

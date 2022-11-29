@@ -9,7 +9,7 @@ import * as vscode from 'vscode';
 import * as api from '../api';
 import { CMakeCache } from '../cache';
 import { CMakeDriver, CMakePreconditionProblemSolver } from '../drivers/cmakeDriver';
-import { Kit, CMakeGenerator } from '../kit';
+//import { Kit, CMakeGenerator } from '../kit';
 import * as logging from '../logging';
 import { fs } from '../pr';
 import * as proc from '../proc';
@@ -50,10 +50,10 @@ export class CMakeLegacyDriver extends CMakeDriver {
         return this._needsReconfigure;
     }
 
-    async doSetKit(cb: () => Promise<void>): Promise<void> {
+    /*async doSetKit(cb: () => Promise<void>): Promise<void> {
         this._needsReconfigure = true;
         await cb();
-    }
+    }*/
 
     async doSetConfigurePreset(need_clean: boolean, cb: () => Promise<void>): Promise<void> {
         this._needsReconfigure = true;
@@ -85,7 +85,10 @@ export class CMakeLegacyDriver extends CMakeDriver {
         const args = Array.from(args_);
         args.push(util.lightNormalizePath(this.sourceDir));
 
-        const generator = (configurePreset) ? {
+        args.push('-G');
+        args.push('Ninja');
+
+        /*const generator = (configurePreset) ? {
             name: configurePreset.generator,
             platform: configurePreset.architecture ? getValue(configurePreset.architecture) : undefined,
             toolset: configurePreset.toolset ? getValue(configurePreset.toolset) : undefined
@@ -104,7 +107,7 @@ export class CMakeLegacyDriver extends CMakeDriver {
                 args.push('-A');
                 args.push(generator.platform);
             }
-        }
+        }*/
 
         const cmake = this.cmake.path;
         if (showCommandOnly) {
@@ -151,21 +154,21 @@ export class CMakeLegacyDriver extends CMakeDriver {
     static async create(cmake: CMakeExecutable,
         config: ConfigurationReader,
         useCMakePresets: boolean,
-        kit: Kit | null,
+        //kit: Kit | null,
         configurePreset: ConfigurePreset | null,
         buildPreset: BuildPreset | null,
         testPreset: TestPreset | null,
         workspaceFolder: string | null,
-        preconditionHandler: CMakePreconditionProblemSolver,
-        preferredGenerators: CMakeGenerator[]): Promise<CMakeLegacyDriver> {
+        preconditionHandler: CMakePreconditionProblemSolver/*,
+        preferredGenerators: CMakeGenerator[]*/): Promise<CMakeLegacyDriver> {
         log.debug(localize('creating.instance.of', 'Creating instance of {0}', "LegacyCMakeDriver"));
         return this.createDerived(new CMakeLegacyDriver(cmake, config, workspaceFolder, preconditionHandler),
             useCMakePresets,
-            kit,
+            //kit,
             configurePreset,
             buildPreset,
-            testPreset,
-            preferredGenerators);
+            testPreset/*,
+            preferredGenerators*/);
     }
 
     get targets() {

@@ -1,6 +1,6 @@
 import { ConfigurationReader, StatusBarButtonVisibility as ButtonVisibility } from './config';
 import { BasicTestResults } from './ctest';
-import { SpecialKits } from './kit';
+//import { SpecialKits } from './kit';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 
@@ -248,7 +248,7 @@ class CMakeStatus extends Button {
     }
 }
 
-class KitSelection extends Button {
+/*class KitSelection extends Button {
     private static readonly _noActiveKit = localize('no.active.kit', 'No active kit');
     private static readonly _noKitSelected = localize('no.kit.selected', 'No Kit Selected');
 
@@ -293,7 +293,7 @@ class KitSelection extends Button {
         }
         return super.getTooltipShort();
     }
-}
+}*/
 
 class BuildTargetSelectionButton extends Button {
     settingsName = 'buildTarget';
@@ -632,7 +632,7 @@ export class StatusBar implements vscode.Disposable {
 
     private readonly _configurePresetButton = new ConfigurePresetSelection(this._config, 3.55);
     private readonly _cmakeToolsStatusItem = new CMakeStatus(this._config, 3.5);
-    private readonly _kitSelectionButton = new KitSelection(this._config, 3.4);
+    //private readonly _kitSelectionButton = new KitSelection(this._config, 3.4);
 
     private readonly _buildButton: BuildButton = new BuildButton(this._config, 3.35);
     private readonly _buildPresetButton = new BuildPresetSelection(this._config, 3.33);
@@ -651,7 +651,7 @@ export class StatusBar implements vscode.Disposable {
         this._buttons = [
             this._workspaceButton,
             this._cmakeToolsStatusItem,
-            this._kitSelectionButton,
+           // this._kitSelectionButton,
             this._buildTargetNameButton,
             this._launchTargetNameButton,
             this._debugButton,
@@ -707,9 +707,9 @@ export class StatusBar implements vscode.Disposable {
     setIsBusy(v: boolean): void {
         this._buildButton.isBusy = v;
     }
-    setActiveKitName(v: string): void {
+    /*setActiveKitName(v: string): void {
         this._kitSelectionButton.text = v;
-    }
+    }*/
     setConfigurePresetName(v: string): void {
         this._configurePresetButton.text = v;
     }
@@ -732,7 +732,7 @@ export class StatusBar implements vscode.Disposable {
 
     useCMakePresets(isUsing: boolean = true): void {
         this._cmakeToolsStatusItem.hidden = isUsing;
-        this._kitSelectionButton.hidden = isUsing;
+       // this._kitSelectionButton.hidden = isUsing;
         this._configurePresetButton.hidden = !isUsing;
         this._buildPresetButton.hidden = !isUsing;
         this._testPresetButton.hidden = !isUsing;

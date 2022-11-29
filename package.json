@@ -48,7 +48,6 @@
     "onCommand:cmake.debugTargetAll",
     "onCommand:cmake.editCache",
     "onCommand:cmake.editCacheUI",
-    "onCommand:cmake.editKits",
     "onCommand:cmake.viewLog",
     "onCommand:cmake.install",
     "onCommand:cmake.installAll",
@@ -64,11 +63,9 @@
     "onCommand:cmake.buildType",
     "onCommand:cmake.buildDirectory",
     "onCommand:cmake.executableTargets",
-    "onCommand:cmake.buildKit",
     "onCommand:cmake.tasksBuildCommand",
     "onCommand:cmake.quickStart",
     "onCommand:cmake.resetState",
-    "onCommand:cmake.scanForKits",
     "onCommand:cmake.selectActiveFolder",
     "onCommand:cmake.selectLaunchTarget",
     "onCommand:cmake.setVariant",
@@ -294,27 +291,9 @@
         "category": "CMake"
       },
       {
-        "command": "cmake.editKits",
-        "title": "%cmake-tools.command.cmake.editKits.title%",
-        "when": "cmake:enableFullFeatureSet",
-        "category": "CMake"
-      },
-      {
-        "command": "cmake.scanForKits",
-        "title": "%cmake-tools.command.cmake.scanForKits.title%",
-        "when": "cmake:enableFullFeatureSet && !useCMakePresets",
-        "category": "CMake"
-      },
-      {
         "command": "cmake.scanForCompilers",
         "title": "%cmake-tools.command.cmake.scanForCompilers.title%",
         "when": "cmake:enableFullFeatureSet && useCMakePresets",
-        "category": "CMake"
-      },
-      {
-        "command": "cmake.selectKit",
-        "title": "%cmake-tools.command.cmake.selectKit.title%",
-        "when": "cmake:enableFullFeatureSet && !useCMakePresets",
         "category": "CMake"
       },
       {
@@ -801,11 +780,6 @@
           "command"
         ],
         "properties": {
-          "cmake.cmakePath": {
-            "type": "string",
-            "default": "cmake",
-            "description": "The path to CMake generator executable"
-          },
           "label": {
             "type": "string",
             "description": "%cmake-tools.taskDefinitions.properties.label.description%"
@@ -949,10 +923,6 @@
       {
         "fileMatch": "cmake-variants.yaml",
         "url": "cmake-tools-schema:///schemas/variants-schema.json"
-      },
-      {
-        "fileMatch": "cmake-kits.json",
-        "url": "cmake-tools-schema:///schemas/kits-schema.json"
       },
       {
         "fileMatch": "CMakePresets.json",
@@ -1290,20 +1260,8 @@
           "command": "cmake.showConfigureCommand"
         },
         {
-          "when": "cmake:enableFullFeatureSet && !useCMakePresets",
-          "command": "cmake.scanForKits"
-        },
-        {
           "command": "cmake.scanForCompilers",
           "when": "cmake:enableFullFeatureSet && useCMakePresets"
-        },
-        {
-          "when": "cmake:enableFullFeatureSet && !useCMakePresets",
-          "command": "cmake.selectKit"
-        },
-        {
-          "when": "cmake:enableFullFeatureSet && !useCMakePresets",
-          "command": "cmake.editKits"
         },
         {
           "command": "cmake.quickStart"
@@ -2120,18 +2078,6 @@
           "description": "%cmake-tools.configuration.cmake.cmakeCommunicationMode%",
           "scope": "resource"
         },
-        "cmake.showSystemKits": {
-          "type": "boolean",
-          "default": true,
-          "description": "%cmake-tools.configuration.cmake.showSystemKits.description%",
-          "scope": "resource"
-        },
-        "cmake.ignoreKitEnv": {
-          "type": "boolean",
-          "default": false,
-          "description": "%cmake-tools.configuration.cmake.ignoreKitEnv.description%",
-          "scope": "resource"
-        },
         "cmake.buildTask": {
           "type": "boolean",
           "default": false,
@@ -2313,26 +2259,6 @@
                 }
               }
             },
-            "kit": {
-              "type": "object",
-              "properties": {
-                "visibility": {
-                  "type": "string",
-                  "description": "%cmake-tools.configuration.cmake.statusbar.advanced.visibility.description%",
-                  "enum": [
-                    "default",
-                    "compact",
-                    "icon",
-                    "hidden"
-                  ]
-                },
-                "length": {
-                  "description": "%cmake-tools.configuration.cmake.statusbar.advanced.length.description%",
-                  "type": "integer",
-                  "default": 20
-                }
-              }
-            },
             "status": {
               "type": "object",
               "properties": {
@@ -2459,15 +2385,6 @@
               }
             }
           }
-        },
-        "cmake.additionalKits": {
-          "type": "array",
-          "default": [],
-          "description": "%cmake-tools.configuration.cmake.additionalKits.description%",
-          "items": {
-            "type": "string"
-          },
-          "scope": "resource"
         },
         "cmake.revealLog": {
           "type": "string",
@@ -2936,38 +2853,38 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/vscode": "^1.73.0",
-    "@types/glob": "^8.0.0",
     "@types/ajv": "^0.0.5",
-    "@types/mocha": "^10.0.0",
+    "@types/glob": "^8.0.0",
     "@types/json5": "~0.0.30",
+    "@types/mocha": "^10.0.0",
     "@types/node": "~14.14.28",
+    "@types/vscode": "^1.73.0",
+    "@types/yauzl": "^2.10.0",	
     "@typescript-eslint/eslint-plugin": "^5.42.0",
     "@typescript-eslint/parser": "^5.42.0",
     "@vscode/debugadapter-testsupport": "^1.51.0",
     "@vscode/debugprotocol": "^1.53.0",
+    "@vscode/test-electron": "^2.2.0",
     "eslint": "^8.26.0",
     "glob": "^8.0.3",
     "mocha": "^10.1.0",
-    "typescript": "^4.8.4",
     "ts-loader": "^9.4.1",
-    "webpack": "^5.74.0",
-    "webpack-cli": "^4.10.0",
-    "@vscode/test-electron": "^2.2.0",
+    "typescript": "^4.8.4",
     "vscode-cpptools": "^6.1.0",
-    "vscode-nls-dev": "^3.3.2"
+    "vscode-nls-dev": "^3.3.2",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0"
   },
   "dependencies": {
-    "ajv": "^7.1.0",
     "abort-controller": "^3.0.0",
-    "vscode-languageclient": "8.0.2",
-    "string-argv": "^0.3.1",
-    "yaml": "^1.10.0",
-    "yauzl": "^2.10.0",
+    "ajv": "^7.1.0",
     "json5": "^2.2.0",
     "open": "^7.4.1",
-    "@vscode/extension-telemetry": "^0.6.2",
+    "string-argv": "^0.3.1",
+    "vscode-languageclient": "8.0.2",
     "vscode-nls": "^5.0.0",
-    "vscode-tas-client": "^0.1.22"
+    "vscode-tas-client": "^0.1.22",
+    "yaml": "^1.10.0",
+    "yauzl": "^2.10.0"
   }
 }

@@ -346,7 +346,7 @@ try
         Set-Content -Path "$SourcePath/_versions.json" -Value (ConvertTo-Json $Versions -Depth 100)
 
         # archive
-        7z a -mx=9 "$AssetsPath/thirdparty-$Platform.zip" "$SourcePath/*"
+        7z a "$AssetsPath/thirdparty-$Platform.zip" "$SourcePath/*"
         if ($Global:LASTEXITCODE -ne 0) {
             throw "7z invalid operation, exit code: $LASTEXITCODE"
         }

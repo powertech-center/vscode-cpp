@@ -5,7 +5,7 @@
 import * as logging from './logging';
 import * as nls from 'vscode-nls';
 import * as path from 'path';
-import { logEvent } from './telemetry';
+//import { logEvent } from './telemetry';
 
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
@@ -71,7 +71,7 @@ class RollbarController {
         log.fatal(localize('unhandled.exception', 'Unhandled exception: {0}', what), exception, JSON.stringify(additional));
         const callstack = cleanStack(exception.stack);
         const message = cleanString(exception.message);
-        logEvent('exception2', { message, callstack });
+       // logEvent('exception2', { message, callstack });
         console.error(exception);
         debugger;
     }

@@ -240,7 +240,7 @@ class Paths {
     }
 
     async expandStringPath(raw_path: string, wsc: DirectoryContext): Promise<string> {
-        return expandString(raw_path, {
+        return raw_path /*expandString(raw_path, {
             vars: {
                 buildKit: '',
                 buildKitVendor: '',
@@ -260,7 +260,7 @@ class Paths {
                 workspaceHash: util.makeHashString(wsc.folder.uri.fsPath),
                 userHome: this.userHome
             }
-        });
+        });*/
     }
 
     async vsCMakePaths(preferredInstanceId?: string): Promise<VSCMakePaths> {

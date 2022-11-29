@@ -8,7 +8,7 @@ import { CacheEntryProperties, ExecutableTarget, RichTarget } from '../api';
 import * as cache from '../cache';
 import * as cms from '../drivers/cmakeServerClient';
 import { CMakeDriver, CMakePreconditionProblemSolver } from '../drivers/cmakeDriver';
-import { Kit, CMakeGenerator } from '../kit';
+//import { Kit, CMakeGenerator } from '../kit';
 import { createLogger } from '../logging';
 import * as proc from '../proc';
 import rollbar from '../rollbar';
@@ -322,7 +322,7 @@ export class CMakeServerDriver extends CMakeDriver {
         return this._cacheEntries;
     }
 
-    private async _setKitAndRestart(need_clean: boolean, cb: () => Promise<void>) {
+    /*private async _setKitAndRestart(need_clean: boolean, cb: () => Promise<void>) {
         this._cmakeInputFileSet = InputFileSet.createEmpty();
         const client = await this._cmsClient;
         if (client) {
@@ -342,10 +342,10 @@ export class CMakeServerDriver extends CMakeDriver {
     doSetKit(cb: () => Promise<void>): Promise<void> {
         this._clientChangeInProgress = this._setKitAndRestart(false, cb);
         return this._clientChangeInProgress;
-    }
+    }*/
 
     doSetConfigurePreset(need_clean: boolean, cb: () => Promise<void>): Promise<void> {
-        this._clientChangeInProgress = this._setKitAndRestart(need_clean, cb);
+        this._clientChangeInProgress = null //this._setKitAndRestart(need_clean, cb);
         return this._clientChangeInProgress;
     }
 
@@ -372,9 +372,9 @@ export class CMakeServerDriver extends CMakeDriver {
     }
 
     private async _startNewClient() {
-        if (!this.generator) {
+        /*if (!this.generator) {
             throw new NoGeneratorError();
-        }
+        }*/
 
         return cms.CMakeServerClient.start({
             tmpdir: path.join(this.workspaceFolder!, '.vscode'),
@@ -393,8 +393,8 @@ export class CMakeServerDriver extends CMakeDriver {
             },
             onProgress: async prog => {
                 this._progressEmitter.fire(prog);
-            },
-            generator: this.generator
+            }/*,
+            generator: this.generator*/
         });
     }
 
@@ -446,20 +446,20 @@ export class CMakeServerDriver extends CMakeDriver {
     static async create(cmake: CMakeExecutable,
         config: ConfigurationReader,
         useCMakePresets: boolean,
-        kit: Kit | null,
+        //kit: Kit | null,
         configurePreset: ConfigurePreset | null,
         buildPreset: BuildPreset | null,
         testPreset: TestPreset | null,
         workspaceFolder: string | null,
-        preconditionHandler: CMakePreconditionProblemSolver,
-        preferredGenerators: CMakeGenerator[]): Promise<CMakeServerDriver> {
+        preconditionHandler: CMakePreconditionProblemSolver/*,
+        preferredGenerators: CMakeGenerator[]*/): Promise<CMakeServerDriver> {
         return this.createDerived(new CMakeServerDriver(cmake, config, workspaceFolder, preconditionHandler),
             useCMakePresets,
-            kit,
+          //  kit,
             configurePreset,
             buildPreset,
-            testPreset,
-            preferredGenerators);
+            testPreset/*,
+            preferredGenerators*/);
     }
 
 }

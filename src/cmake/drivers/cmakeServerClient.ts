@@ -3,7 +3,7 @@ import * as net from 'net';
 import * as path from 'path';
 
 import * as cache from '../cache';
-import { CMakeGenerator } from '../kit';
+//import { CMakeGenerator } from '../kit';
 import { createLogger } from '../logging';
 import { fs } from '../pr';
 import rollbar from '../rollbar';
@@ -328,7 +328,7 @@ export interface ClientInit {
     sourceDir: string;
     binaryDir: string;
     tmpdir: string;
-    generator: CMakeGenerator;
+   // generator: CMakeGenerator;
 }
 
 interface ClientInitPrivate extends ClientInit {
@@ -620,7 +620,7 @@ export class CMakeServerClient {
                 environment: params.environment,
                 onProgress: params.onProgress,
                 onDirty: params.onDirty,
-                generator: params.generator,
+               // generator: params.generator,
                 onCrash: async retc => {
                     if (!resolved) {
                         reject(new StartupError(retc));
@@ -665,11 +665,12 @@ export class CMakeServerClient {
                             }
                         } else {
                             // Do clean configure, all parameters are required.
-                            const generator = params.generator;
+                            //const generator = params.generator;
                             hsparams.sourceDirectory = params.sourceDir;
-                            hsparams.generator = generator.name;
+                            /*hsparams.generator = generator.name;
                             hsparams.platform = generator.platform;
                             hsparams.toolset = generator.toolset;
+                            */
 
                             const configureMessage: string = localize('configuring.using.generator', 'Configuring using the {0} CMake generator', `"${hsparams.generator}"`);
                             const extraMessage: string = hsparams.platform || hsparams.toolset ?

@@ -12,17 +12,19 @@ import * as os from 'os';
 import * as querystring from 'querystring';
 import * as YAML from 'yaml';
 import stringArgv from 'string-argv';
+import * as thirdparty from '../thirdparty';
 import * as htmlView from './htmlView';
 import * as util from './configUtils';
 import * as adapter from './novsc/adapter';
-import { pickProcess } from './pickProcess';
+//import { pickProcess } from './pickProcess';
 import { Dict } from './novsc/commonTypes';
 import { AdapterSettings } from './adapterMessages';
 import { ModuleTreeDataProvider } from './modulesView';
-import { mergeValues } from './novsc/expand';
+//import { mergeValues } from './novsc/expand';
 import { pickSymbol } from './symbols';
 import { ReverseAdapterConnector } from './novsc/reverseConnector';
 import { SimpleServer } from './simpleServer';
+import { fs } from './novsc/async';
 
 export let codelldb_path = 'thirdparty/codelldb'
 export let output = window.createOutputChannel('LLDB');
@@ -454,7 +456,7 @@ class DbgExtension implements DebugConfigurationProvider, DebugAdapterDescriptor
     // Resolve paths of the native adapter libraries and cache them.
     async getAdapterDylibs(config: WorkspaceConfiguration): Promise<[string]> {
         if (!this.adapterDylibsCache) {
-              let liblldb = await adapter.findLibLLDB(path.join(this.context.extensionPath, codelldb_path));
+              let liblldb = thirdparty.getLibLLDBPath()
               this.adapterDylibsCache = [liblldb];
         }
         return this.adapterDylibsCache;
@@ -505,8 +507,8 @@ class DbgExtension implements DebugConfigurationProvider, DebugAdapterDescriptor
     }
 
     commandPrompt() {
-        let lldb = os.platform() != 'win32' ? 'lldb' : 'lldb.exe';
-        let lldbPath = path.join(this.context.extensionPath, codelldb_path, 'bin', lldb);
+        //let lldb = os.platform() != 'win32' ? 'lldb' : 'lldb.exe';
+        let lldbPath = thirdparty.getLLDBPath(); //path.join(this.context.extensionPath, codelldb_path, 'bin', lldb);
         let consolePath = path.join(this.context.extensionPath, adapter.adapter_path, 'scripts', 'console.py');
         let folder = workspace.workspaceFolders[0];
         let config = this.getExtensionConfig();

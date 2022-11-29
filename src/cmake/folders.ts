@@ -7,7 +7,7 @@ import * as path from 'path';
 
 import * as util from './util';
 import CMakeTools from './cmakeTools';
-import { KitsController } from './kitsController';
+//import { KitsController } from './kitsController';
 import rollbar from './rollbar';
 import { disposeAll, setContextValue } from './util';
 import { PresetsController } from './presetsController';
@@ -39,13 +39,13 @@ export class CMakeToolsFolder {
     private readonly _onUseCMakePresetsChangedEmitter = new vscode.EventEmitter<boolean>();
 
     private constructor(readonly cmakeTools: CMakeTools,
-        readonly kitsController: KitsController,
+        //readonly kitsController: KitsController,
         readonly presetsController: PresetsController) {}
 
     static async init(cmakeTools: CMakeTools) {
-        const kitsController = await KitsController.init(cmakeTools);
-        const presetsController = await PresetsController.init(cmakeTools, kitsController);
-        const cmtFolder = new CMakeToolsFolder(cmakeTools, kitsController, presetsController);
+       // const kitsController = await KitsController.init(cmakeTools);
+        const presetsController = await PresetsController.init(cmakeTools/*, kitsController*/);
+        const cmtFolder = new CMakeToolsFolder(cmakeTools, /*kitsController,*/ presetsController);
 
         const useCMakePresetsChangedListener = async () => {
             const usingCMakePresets = cmtFolder.useCMakePresets;
@@ -53,7 +53,7 @@ export class CMakeToolsFolder {
                 cmtFolder._wasUsingCMakePresets = usingCMakePresets;
                 await setContextValue('useCMakePresets', usingCMakePresets);
                 await cmakeTools.setUseCMakePresets(usingCMakePresets);
-                await CMakeToolsFolder.initializeKitOrPresetsInCmt(cmtFolder);
+               // await CMakeToolsFolder.initializeKitOrPresetsInCmt(cmtFolder);
 
                 if (usingCMakePresets) {
                     const setPresetsFileLanguageMode = (document: vscode.TextDocument) => {
@@ -157,10 +157,10 @@ export class CMakeToolsFolder {
             this._onDidOpenTextDocumentListener.dispose();
         }
         this.cmakeTools.dispose();
-        this.kitsController.dispose();
+        //this.kitsController.dispose();
     }
 
-    private static async initializeKitOrPresetsInCmt(folder: CMakeToolsFolder) {
+    /*private static async initializeKitOrPresetsInCmt(folder: CMakeToolsFolder) {
         if (folder.useCMakePresets) {
             const configurePreset = folder.cmakeTools.workspaceContext.state.configurePresetName;
             if (configurePreset) {
@@ -176,7 +176,7 @@ export class CMakeToolsFolder {
                 await folder.cmakeTools.setKit(kit);
             }
         }
-    }
+    }*/
 }
 
 export class CMakeToolsFolderController implements vscode.Disposable {

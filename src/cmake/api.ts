@@ -313,5 +313,5 @@ export interface CMakeToolsAPI extends Disposable {
     /**
      * Get the build kit
      */
-    buildKit(): Thenable<string | null>;
+    //buildKit(): Thenable<string | null>;
 }

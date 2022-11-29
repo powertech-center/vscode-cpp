@@ -11,8 +11,8 @@ import * as util from './util';
 import rollbar from './rollbar';
 import { expandString, ExpansionOptions } from './expand';
 import paths from './paths';
-import { KitsController } from './kitsController';
-import { descriptionForKit, Kit, SpecialKits } from './kit';
+//import { KitsController } from './kitsController';
+//import { descriptionForKit, Kit, SpecialKits } from './kit';
 import { getHostTargetArchString } from './installs/visualStudio';
 import { loadSchema } from './schema';
 import json5 = require('json5');
@@ -38,8 +38,8 @@ export class PresetsController {
 
     private static readonly _addPreset = '__addPreset__';
 
-    static async init(cmakeTools: CMakeTools, kitsController: KitsController): Promise<PresetsController> {
-        const presetsController = new PresetsController(cmakeTools, kitsController);
+    static async init(cmakeTools: CMakeTools/*, kitsController: KitsController*/): Promise<PresetsController> {
+        const presetsController = new PresetsController(cmakeTools/*, kitsController*/);
         const expandSourceDir = async (dir: string) => {
             const workspaceFolder = cmakeTools.folder.uri.fsPath;
             const expansionOpts: ExpansionOptions = {
@@ -96,7 +96,7 @@ export class PresetsController {
         return presetsController;
     }
 
-    private constructor(private readonly _cmakeTools: CMakeTools, private readonly _kitsController: KitsController) {}
+    private constructor(private readonly _cmakeTools: CMakeTools/*, private readonly _kitsController: KitsController*/) {}
 
     get presetsPath() {
         return path.join(this._sourceDir, 'CMakePresets.json');
@@ -250,17 +250,17 @@ export class PresetsController {
             switch (chosenItem.name) {
                 case SpecialOptions.CreateFromCompilers: {
                     // Check that we have kits
-                    if (!await this._kitsController.checkHaveKits()) {
+                    /*if (!await this._kitsController.checkHaveKits()) {
                         return false;
-                    }
+                    }*/
 
-                    const allKits = this._kitsController.availableKits;
+                    //const allKits = this._kitsController.availableKits;
                     // Filter VS based on generators, for example:
                     // VS 2019 Release x86, VS 2019 Preview x86, and VS 2017 Release x86
                     // will be filtered to
                     // VS 2019 x86, VS 2017 x86
                     // Remove toolchain kits
-                    const filteredKits: Kit[] = [];
+                    /*const filteredKits: Kit[] = [];
                     for (const kit of allKits) {
                         if (kit.toolchainFile || kit.name === SpecialKits.Unspecified) {
                             continue;
@@ -280,16 +280,16 @@ export class PresetsController {
                         if (!duplicate) {
                             filteredKits.push(kit);
                         }
-                    }
+                    }*/
 
-                    log.debug(localize('start.selection.of.compilers', 'Start selection of compilers. Found {0} compilers.', filteredKits.length));
+                  //  log.debug(localize('start.selection.of.compilers', 'Start selection of compilers. Found {0} compilers.', filteredKits.length));
 
-                    interface KitItem extends vscode.QuickPickItem {
+                    /*interface KitItem extends vscode.QuickPickItem {
                         kit: Kit;
-                    }
+                    }*/
                     log.debug(localize('opening.compiler.selection', 'Opening compiler selection QuickPick'));
                     // Generate the quickpick items from our known kits
-                    const getKitName = (kit: Kit) => {
+                    /*const getKitName = (kit: Kit) => {
                         if (kit.name === SpecialKits.ScanForKits) {
                             return `[${localize('scan.for.compilers.button', 'Scan for compilers')}]`;
                         } else if (kit.visualStudio && !kit.compilers) {
@@ -298,8 +298,8 @@ export class PresetsController {
                         } else {
                             return kit.name;
                         }
-                    };
-                    const item_promises = filteredKits.map(
+                    };*/
+                    /*const item_promises = filteredKits.map(
                         async (kit): Promise<KitItem> => ({
                             label: getKitName(kit),
                             description: await descriptionForKit(kit, true),
@@ -339,9 +339,9 @@ export class PresetsController {
                                 binaryDir: '${sourceDir}/out/build/${presetName}',
                                 cacheVariables
                             };
-                        }
+                        
                     }
-                    break;
+                    break;}*/
                 }
                 case SpecialOptions.InheritConfigurationPreset: {
                     const placeHolder = localize('select.one.or.more.config.preset.placeholder', 'Select one or more configure presets');
@@ -1038,7 +1038,7 @@ export class PresetsController {
     }
 
     private async showPresetsFileVersionError(file: string): Promise<void> {
-        const useKitsVars = localize('use.kits.variants', 'Use kits and variants');
+       /* const useKitsVars = localize('use.kits.variants', 'Use kits and variants');
         const changePresets = localize('edit.presets', 'Locate');
         const result = await vscode.window.showErrorMessage(
             localize('presets.version.error', 'CMakePresets version 1 is not supported. How would you like to proceed?'),
@@ -1047,7 +1047,7 @@ export class PresetsController {
             void vscode.workspace.getConfiguration('cmake', this.folder.uri).update('useCMakePresets', 'never');
         } else {
             await vscode.workspace.openTextDocument(vscode.Uri.file(file));
-        }
+        }*/
     }
 
     // Note: in case anyone want to change this, presetType must match the corresponding key in presets.json files

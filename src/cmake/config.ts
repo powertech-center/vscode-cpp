@@ -7,7 +7,7 @@
 import * as logging from './logging';
 import * as util from './util';
 import * as os from 'os';
-import * as telemetry from './telemetry';
+//import * as telemetry from './telemetry';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { CppDebugConfiguration } from './debugger';
@@ -52,10 +52,10 @@ export interface AdvancedStatusBarConfig {
         visibility?: StatusBarButtonVisibility;
         length?: number;
     };
-    kit?: {
+    /*kit?: {
         visibility?: StatusBarButtonVisibility;
         length?: number;
-    };
+    };*/
     status?: {
         visibility?: StatusBarButtonVisibility;
     };
@@ -128,13 +128,13 @@ export interface ExtensionConfigurationSettings {
     skipConfigureIfCachePresent: boolean | null;
     useCMakeServer: boolean;
     cmakeCommunicationMode: CMakeCommunicationMode;
-    showSystemKits: boolean;
-    ignoreKitEnv: boolean;
+    //showSystemKits: boolean;
+    //ignoreKitEnv: boolean;
     buildTask: boolean;
     outputLogEncoding: string;
     enableTraceLogging: boolean;
     loggingLevel: LogLevelKey;
-    additionalKits: string[];
+    //additionalKits: string[];
     touchbar: TouchBarConfig;
     statusbar: StatusBarConfig;
     useCMakePresets: UseCMakePresets;
@@ -180,11 +180,11 @@ export class ConfigurationReader implements vscode.Disposable {
                 const updatedKeys = reader.update(newConfigData);
 
                 if (updatedKeys.length > 0) {
-                    const telemetryProperties: telemetry.Properties = {
+                    /*const telemetryProperties: telemetry.Properties = {
                         isSet: updatedKeys.join(";")
-                    };
+                    };*/
 
-                    telemetry.logEvent("settings", telemetryProperties);
+                    //telemetry.logEvent("settings", telemetryProperties);
                 }
             }
         });
@@ -385,9 +385,9 @@ export class ConfigurationReader implements vscode.Disposable {
     get mingwSearchDirs(): string[] {
         return this.configData.mingwSearchDirs;
     }
-    get additionalKits(): string[] {
+    /*get additionalKits(): string[] {
         return this.configData.additionalKits;
-    }
+    }*/
     get emscriptenSearchDirs(): string[] {
         return this.configData.emscriptenSearchDirs;
     }
@@ -397,12 +397,12 @@ export class ConfigurationReader implements vscode.Disposable {
     get copyCompileCommands(): string | null {
         return this.configData.copyCompileCommands;
     }
-    get showSystemKits(): boolean {
+    /*get showSystemKits(): boolean {
         return this.configData.showSystemKits;
     }
     get ignoreKitEnv(): boolean {
         return this.configData.ignoreKitEnv;
-    }
+    }*/
     get buildTask(): boolean {
         return this.configData.buildTask;
     }
@@ -471,13 +471,13 @@ export class ConfigurationReader implements vscode.Disposable {
         skipConfigureIfCachePresent: new vscode.EventEmitter<boolean | null>(),
         useCMakeServer: new vscode.EventEmitter<boolean>(),
         cmakeCommunicationMode: new vscode.EventEmitter<CMakeCommunicationMode>(),
-        showSystemKits: new vscode.EventEmitter<boolean>(),
-        ignoreKitEnv: new vscode.EventEmitter<boolean>(),
+        //showSystemKits: new vscode.EventEmitter<boolean>(),
+        //ignoreKitEnv: new vscode.EventEmitter<boolean>(),
         buildTask: new vscode.EventEmitter<boolean>(),
         outputLogEncoding: new vscode.EventEmitter<string>(),
         enableTraceLogging: new vscode.EventEmitter<boolean>(),
         loggingLevel: new vscode.EventEmitter<LogLevelKey>(),
-        additionalKits: new vscode.EventEmitter<string[]>(),
+        //additionalKits: new vscode.EventEmitter<string[]>(),
         touchbar: new vscode.EventEmitter<TouchBarConfig>(),
         statusbar: new vscode.EventEmitter<StatusBarConfig>(),
         useCMakePresets: new vscode.EventEmitter<UseCMakePresets>(),

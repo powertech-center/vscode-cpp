@@ -15,6 +15,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import * as proc from './proc';
 import * as api from './api';
+import * as thirdparty from '../thirdparty';
 import { ExecutionOptions, ExecutionResult } from './api';
 import { CodeModelContent } from './drivers/codeModel';
 import { BadHomeDirectoryError } from './drivers/cmakeServerClient';
@@ -25,14 +26,14 @@ import { CMakeOutputConsumer } from './diagnostics/cmake';
 import { populateCollection } from './diagnostics/util';
 import { CMakeDriver, CMakePreconditionProblems } from './drivers/cmakeDriver';
 import { expandString, ExpansionOptions } from './expand';
-import { CMakeGenerator, Kit } from './kit';
+//import { CMakeGenerator, Kit } from './kit';
 import { CMakeLegacyDriver } from './drivers/cmakeLegacyDriver';
 import * as logging from './logging';
 import { fs } from './pr';
 import { buildCmdStr, DebuggerEnvironmentVariable } from './proc';
 import { Property } from './prop';
 import rollbar from './rollbar';
-import * as telemetry from './telemetry';
+//import * as telemetry from './telemetry';
 import { setContextValue } from './util';
 import { VariantManager } from './variant';
 import { CMakeFileApiDriver } from './drivers/cmakeFileApiDriver';
@@ -71,7 +72,7 @@ export enum ConfigureTrigger {
     setVariant = "setVariant",
     cmakeListsChange = "cmakeListsChange",
     sourceDirectoryChange = "sourceDirectoryChange",
-    buttonNewKitsDefinition = "buttonNewKitsDefinition",
+    //buttonNewKitsDefinition = "buttonNewKitsDefinition",
     compilation = "compilation",
     launch = "launch",
     commandEditCacheUI = "commandEditCacheUI",
@@ -555,7 +556,7 @@ export class CMakeTools implements api.CMakeToolsAPI {
         }
     }
 
-    private getPreferredGenerators(): CMakeGenerator[] {
+    /*private getPreferredGenerators(): CMakeGenerator[] {
         // User can override generator with a setting
         const userGenerator = this.workspaceContext.config.generator;
         if (userGenerator) {
@@ -569,11 +570,12 @@ export class CMakeTools implements api.CMakeToolsAPI {
 
         const userPreferred = this.workspaceContext.config.preferredGenerators.map(g => ({ name: g }));
         return userPreferred;
-    }
+    }*/
 
     private getPreferredGeneratorName(): string | undefined {
-        const generators = this.getPreferredGenerators();
-        return generators[0]?.name;
+        //const generators = this.getPreferredGenerators();
+       // return generators[0]?.name;
+       return "ninja"
     }
 
     /**
@@ -583,7 +585,7 @@ export class CMakeTools implements api.CMakeToolsAPI {
      */
     public async cmakePreConditionProblemHandler(e: CMakePreconditionProblems, isConfiguring: boolean, config?: ConfigurationReader): Promise<void> {
         let telemetryEvent: string | undefined;
-        const telemetryProperties: telemetry.Properties = {};
+        //const telemetryProperties: telemetry.Properties = {};
 
         switch (e) {
             case CMakePreconditionProblems.ConfigureIsAlreadyRunning:
@@ -598,10 +600,10 @@ export class CMakeTools implements api.CMakeToolsAPI {
             case CMakePreconditionProblems.MissingCMakeListsFile:
                 telemetryEvent = "partialActivation";
 
-                telemetry.logEvent('missingCMakeListsFile');  // Fire this event in case the notification is dismissed with the `ESC` key.
+                //telemetry.logEvent('missingCMakeListsFile');  // Fire this event in case the notification is dismissed with the `ESC` key.
 
                 const ignoreCMakeListsMissing: boolean = this.workspaceContext.state.ignoreCMakeListsMissing || this.workspaceContext.config.ignoreCMakeListsMissing;
-                telemetryProperties["ignoreCMakeListsMissing"] = ignoreCMakeListsMissing.toString();
+                ////telemetryProperties["ignoreCMakeListsMissing"] = ignoreCMakeListsMissing.toString();
 
                 if (!ignoreCMakeListsMissing) {
                     const quickStart = localize('quickstart.cmake.project', "Create");
@@ -611,15 +613,15 @@ export class CMakeTools implements api.CMakeToolsAPI {
                     let showCMakeLists: boolean = await showCMakeListsExperiment();
                     const existingCmakeListsFiles: string[] | undefined = await util.getAllCMakeListsPaths(this.folder.uri);
 
-                    telemetryProperties["showCMakeListsExperiment"] = (showCMakeLists).toString();
+                    //telemetryProperties["showCMakeListsExperiment"] = (showCMakeLists).toString();
                     if (existingCmakeListsFiles !== undefined && existingCmakeListsFiles.length > 0) {
-                        telemetryProperties["hasCmakeLists"] = "true";
+                        //telemetryProperties["hasCmakeLists"] = "true";
                     } else {
                         showCMakeLists = false;
-                        telemetryProperties["hasCMakeLists"] = "false";
+                        //telemetryProperties["hasCMakeLists"] = "false";
                     }
 
-                    telemetryProperties["missingCMakeListsPopupType"] = showCMakeLists ? "selectFromAllCMakeLists" : "toastCreateLocateIgnore";
+                    //telemetryProperties["missingCMakeListsPopupType"] = showCMakeLists ? "selectFromAllCMakeLists" : "toastCreateLocateIgnore";
 
                     const result = showCMakeLists ? changeSourceDirectory : await vscode.window.showErrorMessage(
                         localize('missing.cmakelists', 'CMakeLists.txt was not found in the root of the folder {0}. How would you like to proceed?', `"${this.folderName}"`),
@@ -630,8 +632,8 @@ export class CMakeTools implements api.CMakeToolsAPI {
                         // will set unnecessarily a partial feature set view for this folder
                         // if quickStart doesn't finish early enough.
                         // quickStart will update correctly the full/partial view state at the end.
-                        telemetryProperties["missingCMakeListsUserAction"] = "quickStart";
-                        telemetry.logEvent(telemetryEvent, telemetryProperties);
+                        //telemetryProperties["missingCMakeListsUserAction"] = "quickStart";
+                        //telemetry.logEvent(telemetryEvent, telemetryProperties);
                         return vscode.commands.executeCommand('cmake.quickStart');
                     } else if (result === changeSourceDirectory) {
                         // Open the search file dialog from the path set by cmake.sourceDirectory or from the current workspace folder
@@ -650,9 +652,9 @@ export class CMakeTools implements api.CMakeToolsAPI {
                         });
 
                         if (showCMakeLists) {
-                            telemetryProperties["missingCMakeListsUserAction"] = (selection === undefined) ? "cancel-exp" : (selection.label === browse) ? "browse" : "pick";
+                            //telemetryProperties["missingCMakeListsUserAction"] = (selection === undefined) ? "cancel-exp" : (selection.label === browse) ? "browse" : "pick";
                         } else {
-                            telemetryProperties["missingCMakeListsUserAction"] = (selection === undefined) ? "cancel-ctl" : "changeSourceDirectory";
+                            //telemetryProperties["missingCMakeListsUserAction"] = (selection === undefined) ? "cancel-ctl" : "changeSourceDirectory";
                         }
 
                         let selectedFile: string | undefined;
@@ -690,12 +692,12 @@ export class CMakeTools implements api.CMakeToolsAPI {
                                 await enableFullFeatureSet(true);
 
                                 if (!isConfiguring) {
-                                    telemetry.logEvent(telemetryEvent, telemetryProperties);
+                                    //telemetry.logEvent(telemetryEvent, telemetryProperties);
                                     return vscode.commands.executeCommand('cmake.configure');
                                 }
                             }
                         } else {
-                            telemetryProperties["missingCMakeListsUserAction"] = showCMakeLists ? "cancel-browse-exp" : "cancel-browse-ctl";
+                            //telemetryProperties["missingCMakeListsUserAction"] = showCMakeLists ? "cancel-browse-exp" : "cancel-browse-ctl";
                         }
                     } else if (result === ignoreActivation) {
                         // The user ignores the missing CMakeLists.txt file --> limit the CMake Tools extension functionality
@@ -704,11 +706,11 @@ export class CMakeTools implements api.CMakeToolsAPI {
                         // or to the CMakeLists.txt file, a successful configure or a configure failing with anything but CMakePreconditionProblems.MissingCMakeListsFile.
                         // After that switch (back to a full activation), another occurrence of missing CMakeLists.txt
                         // would trigger this popup again.
-                        telemetryProperties["missingCMakeListsUserAction"] = "ignore";
+                        //telemetryProperties["missingCMakeListsUserAction"] = "ignore";
                         await this.workspaceContext.state.setIgnoreCMakeListsMissing(true);
                     } else {
                         // "invalid" normally shouldn't happen since the popup can be closed by either dismissing it or clicking any of the three buttons.
-                        telemetryProperties["missingCMakeListsUserAction"] = (result === undefined) ? "cancel-dismiss" : "invalid";
+                        //telemetryProperties["missingCMakeListsUserAction"] = (result === undefined) ? "cancel-dismiss" : "invalid";
                     }
                 }
 
@@ -716,7 +718,7 @@ export class CMakeTools implements api.CMakeToolsAPI {
         }
 
         if (telemetryEvent) {
-            telemetry.logEvent(telemetryEvent, telemetryProperties);
+            //telemetry.logEvent(telemetryEvent, telemetryProperties);
         }
 
         // This CMT folder can go through various changes while executing this function
@@ -737,7 +739,7 @@ export class CMakeTools implements api.CMakeToolsAPI {
 
         const workspace = this.folder.uri.fsPath;
         let drv: CMakeDriver;
-        const preferredGenerators = this.getPreferredGenerators();
+        //const preferredGenerators = this.getPreferredGenerators();
         const preConditionHandler = async (e: CMakePreconditionProblems, config?: ConfigurationReader) => this.cmakePreConditionProblemHandler(e, true, config);
         let communicationMode = this.workspaceContext.config.cmakeCommunicationMode.toLowerCase();
         const fileApi = 'fileapi';
@@ -781,37 +783,37 @@ export class CMakeTools implements api.CMakeToolsAPI {
                 case fileApi:
                     drv = await CMakeFileApiDriver.create(cmake, this.workspaceContext.config,
                         this.useCMakePresets,
-                        this.activeKit,
+                       // this.activeKit,
                         this.configurePreset,
                         this.buildPreset,
                         this.testPreset,
                         workspace,
-                        preConditionHandler,
-                        preferredGenerators);
+                        preConditionHandler/*,
+                        preferredGenerators*/);
                     break;
                 case serverApi:
                     drv = await CMakeServerDriver.create(cmake,
                         this.workspaceContext.config,
                         this.useCMakePresets,
-                        this.activeKit,
+                       // this.activeKit,
                         this.configurePreset,
                         this.buildPreset,
                         this.testPreset,
                         workspace,
-                        preConditionHandler,
-                        preferredGenerators);
+                        preConditionHandler/*,
+                        preferredGenerators*/);
                     break;
                 default:
                     drv = await CMakeLegacyDriver.create(cmake,
                         this.workspaceContext.config,
                         this.useCMakePresets,
-                        this.activeKit,
+                        //this.activeKit,
                         this.configurePreset,
                         this.buildPreset,
                         this.testPreset,
                         workspace,
-                        preConditionHandler,
-                        preferredGenerators);
+                        preConditionHandler/*,
+                        preferredGenerators*/);
             }
         } finally {
             this.statusMessage.set(localize('ready.status', 'Ready'));
@@ -915,7 +917,7 @@ export class CMakeTools implements api.CMakeToolsAPI {
         this.extensionContext.subscriptions.push(vscode.workspace.onDidOpenTextDocument(async td => {
             const str = td.uri.fsPath.toLowerCase();
             if (str.endsWith("cmakelists.txt") || str.endsWith(".cmake")) {
-                telemetry.logEvent("cmakeFileOpen");
+                //telemetry.logEvent("cmakeFileOpen");
             }
         }));
 
@@ -1003,24 +1005,25 @@ export class CMakeTools implements api.CMakeToolsAPI {
                 }
 
                 if (fileType) {
-                    telemetry.logEvent("cmakeFileWrite", { filetype: fileType, outsideActiveFolder: outside.toString() });
+                    //telemetry.logEvent("cmakeFileWrite", { filetype: fileType, outsideActiveFolder: outside.toString() });
                 }
             }
         }));
     }
 
     async isNinjaInstalled(): Promise<boolean> {
-        const drv = await this.cmakeDriver;
+        /*const drv = await this.cmakeDriver;
 
         if (drv) {
             return await drv.testHaveCommand('ninja') || drv.testHaveCommand('ninja-build');
         }
 
-        return false;
+        return false;*/
+        return true
     }
 
     private refreshLaunchEnvironment: boolean = false;
-    async setKit(kit: Kit | null) {
+    /*async setKit(kit: Kit | null) {
         if (!this.activeKit || (kit && this.activeKit.name !== kit.name)) {
             this.refreshLaunchEnvironment = true;
         }
@@ -1045,14 +1048,15 @@ export class CMakeTools implements api.CMakeToolsAPI {
                 await this.workspaceContext.state.setActiveKitName(kit.name);
             }
         }
-    }
+    }*/
 
     async getCMakeExecutable() {
         const overWriteCMakePathSetting = this.useCMakePresets ? this.configurePreset?.cmakeExecutable : undefined;
-        let cmakePath = await this.workspaceContext.getCMakePath(overWriteCMakePathSetting);
+        /*let cmakePath = await this.workspaceContext.getCMakePath(overWriteCMakePathSetting);
         if (!cmakePath) {
             cmakePath = 'cmake';
-        }
+        }*/
+        let cmakePath = thirdparty.getCMakePath()
         const cmakeExe = await getCMakeExecutableInformation(cmakePath);
         if (cmakeExe.version && this.minCMakeVersion && versionLess(cmakeExe.version, this.minCMakeVersion)) {
             rollbar.error(localize('cmake.version.not.supported',
@@ -1073,15 +1077,15 @@ export class CMakeTools implements api.CMakeToolsAPI {
      */
     async getCMakeDriverInstance(): Promise<CMakeDriver | null> {
         return this.driverStrand.execute(async () => {
-            if (!this.useCMakePresets && !this.activeKit) {
+           /* if (!this.useCMakePresets && !this.activeKit) {
                 log.debug(localize('not.starting.no.kits', 'Not starting CMake driver: no kit selected'));
                 return null;
-            }
+            }*/
 
             const cmake = await this.getCMakeExecutable();
             if (!cmake.isPresent) {
                 void vscode.window.showErrorMessage(localize('bad.executable', 'Bad CMake executable: {0}. Check to make sure it is installed or the value of the {1} setting contains the correct path', `"${cmake.path}"`, '"cmake.cmakePath"'));
-                telemetry.logEvent('CMakeExecutableNotFound');
+                //telemetry.logEvent('CMakeExecutableNotFound');
                 return null;
             }
 
@@ -1168,10 +1172,10 @@ export class CMakeTools implements api.CMakeToolsAPI {
         return CMakeTools.create(ext, dirContext);
     }
 
-    private _activeKit: Kit | null = null;
+    /*private _activeKit: Kit | null = null;
     get activeKit(): Kit | null {
         return this._activeKit;
-    }
+    }*/
 
     /**
      * The compilation database for this driver.
@@ -1418,9 +1422,9 @@ export class CMakeTools implements api.CMakeToolsAPI {
             return -1;
         }
         if (!this.useCMakePresets) {
-            if (!this.activeKit) {
+            /*if (!this.activeKit) {
                 throw new Error(localize('cannot.configure.no.kit', 'Cannot configure: No kit is active for this CMake Tools'));
-            }
+            }*/
             if (!this.variantManager.haveVariant) {
                 progress.report({ message: localize('waiting.on.variant', 'Waiting on variant selection') });
                 await this.variantManager.selectVariant();
@@ -2044,13 +2048,13 @@ export class CMakeTools implements api.CMakeToolsAPI {
     /**
      * Implementation of `cmake.buildKit`
      */
-    async buildKit(): Promise<string | null> {
+    /*async buildKit(): Promise<string | null> {
         if (this.activeKit) {
             return this.activeKit.name;
         } else {
             return null;
         }
-    }
+    }*/
 
     async prepareLaunchTargetExecutable(name?: string): Promise<api.ExecutableTarget | null> {
         let chosen: api.ExecutableTarget;
@@ -2192,12 +2196,12 @@ export class CMakeTools implements api.CMakeToolsAPI {
         } else {
             dbg = "(unset)";
         }
-        const telemetryProperties: telemetry.Properties = {
+       /*const telemetryProperties: telemetry.Properties = {
             customSetting: customSetting.toString(),
             debugger: dbg
-        };
+        };*/
 
-        telemetry.logEvent('debug', telemetryProperties);
+        //telemetry.logEvent('debug', telemetryProperties);
 
         await vscode.debug.startDebugging(this.folder, debugConfig);
         return vscode.debug.activeDebugSession!;

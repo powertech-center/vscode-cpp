@@ -16,7 +16,7 @@ import {
 } from '../drivers/cmakeFileApi';
 import * as codeModel from '../drivers/codeModel';
 import { CMakeDriver, CMakePreconditionProblemSolver } from '../drivers/cmakeDriver';
-import { CMakeGenerator, Kit } from '../kit';
+//import { CMakeGenerator, Kit } from '../kit';
 import * as logging from '../logging';
 import { fs } from '../pr';
 import * as proc from '../proc';
@@ -54,21 +54,21 @@ export class CMakeFileApiDriver extends CMakeDriver {
     static async create(cmake: CMakeExecutable,
         config: ConfigurationReader,
         useCMakePresets: boolean,
-        kit: Kit | null,
+        //kit: Kit | null,
         configurePreset: ConfigurePreset | null,
         buildPreset: BuildPreset | null,
         testPreset: TestPreset | null,
         workspaceRootPath: string | null,
-        preconditionHandler: CMakePreconditionProblemSolver,
-        preferredGenerators: CMakeGenerator[]): Promise<CMakeFileApiDriver> {
+        preconditionHandler: CMakePreconditionProblemSolver/*,
+        preferredGenerators: CMakeGenerator[]*/): Promise<CMakeFileApiDriver> {
         log.debug('Creating instance of CMakeFileApiDriver');
         return this.createDerived(new CMakeFileApiDriver(cmake, config, workspaceRootPath, preconditionHandler),
             useCMakePresets,
-            kit,
+           // kit,
             configurePreset,
             buildPreset,
-            testPreset,
-            preferredGenerators);
+            testPreset/*,
+            preferredGenerators*/);
     }
 
     private _needsReconfigure = true;
@@ -93,11 +93,11 @@ export class CMakeFileApiDriver extends CMakeDriver {
     async loadGeneratorInformationFromCache(cache_file_path: string) {
         const cache = await CMakeCache.fromPath(cache_file_path);
 
-        this._generator = {
+        /*this._generator = {
             name: cache.get('CMAKE_GENERATOR')!.value,
             platform: cache.get('CMAKE_GENERATOR_PLATFORM') ? cache.get('CMAKE_GENERATOR_PLATFORM')!.value : undefined,
             toolset: cache.get('CMAKE_GENERATOR_TOOLSET') ? cache.get('CMAKE_GENERATOR_TOOLSET')!.value : undefined
-        } as CMakeGenerator;
+        } as CMakeGenerator;*/
 
         this._generatorInformation = {
             name: cache.get('CMAKE_GENERATOR')!.value,
@@ -114,7 +114,7 @@ export class CMakeFileApiDriver extends CMakeDriver {
         // We need to treat this case as if the cache is not present and let a reconfigure
         // refresh the cache information.
         const cacheExists: boolean = await fs.exists(this.cachePath);
-        if (cacheExists && this.generator?.name === await this.getGeneratorFromCache(this.cachePath)) {
+        if (cacheExists /*&& this.generator?.name === await this.getGeneratorFromCache(this.cachePath)*/) {
             await this.loadGeneratorInformationFromCache(this.cachePath);
             const code_model_exist = await this.updateCodeModel();
             if (!code_model_exist && this.config.configureOnOpen === true) {
@@ -136,11 +136,11 @@ export class CMakeFileApiDriver extends CMakeDriver {
                 }
             }
 
-            this._generatorInformation = this.generator;
+            this._generatorInformation = null //this.generator;
         }
-        if (!this.generator && !this.useCMakePresets) {
+        /*if (!this.generator && !this.useCMakePresets) {
             throw new NoGeneratorError();
-        }
+        }*/
 
         this._cacheWatcher.onDidChange(() => {
             log.debug(`Reload CMake cache: ${this.cachePath} changed`);
@@ -179,13 +179,13 @@ export class CMakeFileApiDriver extends CMakeDriver {
         return this._needsReconfigure;
     }
 
-    async doSetKit(cb: () => Promise<void>): Promise<void> {
+    /*async doSetKit(cb: () => Promise<void>): Promise<void> {
         this._needsReconfigure = true;
         await cb();
         if (!this.generator) {
             throw new NoGeneratorError();
         }
-    }
+    }*/
 
     async doSetConfigurePreset(need_clean: boolean, cb: () => Promise<void>): Promise<void> {
         this._needsReconfigure = true;
@@ -193,9 +193,9 @@ export class CMakeFileApiDriver extends CMakeDriver {
             await this._cleanPriorConfiguration();
         }
         await cb();
-        if (!this.generator) {
+        /*if (!this.generator) {
             throw new NoGeneratorError();
-        }
+        }*/
     }
 
     doSetBuildPreset(cb: () => Promise<void>): Promise<void> {
@@ -239,7 +239,9 @@ export class CMakeFileApiDriver extends CMakeDriver {
         args.push(`-B${util.lightNormalizePath(binaryDir)}`);
 
         if (!has_gen) {
-            const generator = (configurePreset) ? {
+            args.push('-G');
+            args.push('Ninja');
+          /*  const generator = (configurePreset) ? {
                 name: configurePreset.generator,
                 platform: configurePreset.architecture ? getValue(configurePreset.architecture) : undefined,
                 toolset: configurePreset.toolset ? getValue(configurePreset.toolset) : undefined
@@ -258,7 +260,7 @@ export class CMakeFileApiDriver extends CMakeDriver {
                     args.push('-A');
                     args.push(generator.platform);
                 }
-            }
+            }*/
         }
 
         const cmake = this.cmake.path;

@@ -27,6 +27,7 @@ SOFTWARE.
 import {workspace, window, languages, ExtensionContext, TextDocument, DocumentSelector, Position, commands, LanguageConfiguration, CompletionItemKind, CompletionItem, SnippetString, CompletionItemProvider, Hover, HoverProvider, Disposable, CancellationToken} from 'vscode';
 import util = require('util');
 import child_process = require("child_process");
+import * as thirdparty from '../thirdparty'
 
 /// strings Helpers
 function strContains(word, pattern) {
@@ -72,7 +73,7 @@ function commandArgs2Array(text: string): string[] {
 // and return a promise with stdout
 let cmake = (args: string[]): Promise<string> => {
     return new Promise(function (resolve, reject) {
-        let cmake_config = config<string>('cmakePath', 'cmake');
+        let cmake_config = thirdparty.getCMakePath() //config<string>('cmakePath', 'cmake');
         let cmake_args = commandArgs2Array(cmake_config)
         let cmd = child_process.spawn(cmake_args[0], cmake_args.slice(1, cmake_args.length)
                 .concat(args.map(arg => { return arg.replace(/\r/gm, ''); })));
@@ -83,7 +84,7 @@ let cmake = (args: string[]): Promise<string> => {
         });
         cmd.on("error", function (error) {
             if (error && (<any>error).code === 'ENOENT') {
-                window.showInformationMessage('The "cmake" command is not found in PATH.  Install it or use `cmake.cmakePath` in the workspace settings to define the CMake executable binary.');
+                window.showInformationMessage('The "cmake" command is not found in PATH');
             }
             reject();
         });
