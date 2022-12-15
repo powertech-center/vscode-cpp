@@ -520,7 +520,7 @@ class ExtensionManager implements vscode.Disposable {
             await scanForKitsIfNeeded(cmt);*/
 
         let shouldConfigure = cmt.workspaceContext.config.configureOnOpen;
-        if (shouldConfigure === null && !util.isTestMode()) {
+        /*if (shouldConfigure === null && !util.isTestMode()) {
             interface Choice1 {
                 title: string;
                 doConfigure: boolean;
@@ -566,7 +566,7 @@ class ExtensionManager implements vscode.Disposable {
                 rollbar.takePromise(localize('persist.config.on.open.setting', 'Persist config-on-open setting'), {}, prompt);
                 shouldConfigure = chosen.doConfigure;
             }
-        }
+        }*/
 
         if (!await this.folderIsCMakeProject(cmt)) {
             await cmt.cmakePreConditionProblemHandler(CMakePreconditionProblems.MissingCMakeListsFile, false, this.workspaceConfig);
@@ -574,7 +574,7 @@ class ExtensionManager implements vscode.Disposable {
             if (shouldConfigure === true) {
                 // We've opened a new workspace folder, and the user wants us to
                 // configure it now.
-                log.debug(localize('configuring.workspace.on.open', 'Configuring workspace on open {0}', ws.uri.toString()));
+                //log.debug(localize('configuring.workspace.on.open', 'Configuring workspace on open {0}', ws.uri.toString()));
                 await this.configureExtensionInternal(ConfigureTrigger.configureOnOpen, cmt);
             } else {
                 const configureButtonMessage = localize('configure.now.button', 'Configure Now');
@@ -1291,6 +1291,19 @@ class ExtensionManager implements vscode.Disposable {
         return this.mapQueryCMakeTools(cmt => cmt.launchTargetPath(), folder);
     }
 
+    buildDebug(targetName?: string /* ToDo */) {
+        //telemetry.logEvent("substitution", { command: "launchTargetPath" });
+        return this.mapQueryCMakeTools(cmt => cmt.launchTargetPath());
+    }
+
+    launchDebug(targetName?: string) {
+        (this.buildDebug(targetName) as Promise<any>).then((fileName) => {
+            if (fileName) {
+                vscode.window.showInformationMessage(`ToDo: \"${path.basename(fileName)}\" will be launched`);
+            }
+        })
+    }
+
     launchTargetDirectory(folder?: vscode.WorkspaceFolder | string) {
         //telemetry.logEvent("substitution", { command: "launchTargetDirectory" });
         return this.mapQueryCMakeTools(cmt => cmt.launchTargetDirectory(), folder);
@@ -1601,7 +1614,7 @@ class ExtensionManager implements vscode.Disposable {
 }
 
 async function setup(context: vscode.ExtensionContext, progress?: ProgressHandle) {
-    reportProgress(localize('initial.setup', 'Initial setup'), progress);
+    //reportProgress(localize('initial.setup', 'Initial setup'), progress);
 
     // Load a new extension manager
     const ext = extensionManager = await ExtensionManager.create(context);
@@ -1621,10 +1634,10 @@ async function setup(context: vscode.ExtensionContext, progress?: ProgressHandle
                 const ret = await fn(...args);
                 try {
                     // Log the result of the command.
-                    log.debug(localize('cmake.finished.returned', '{0} finished (returned {1})', `[${id}] cmake.${name}`, JSON.stringify(ret)));
+                    //log.debug(localize('cmake.finished.returned', '{0} finished (returned {1})', `[${id}] cmake.${name}`, JSON.stringify(ret)));
                 } catch (e) {
                     // Log, but don't try to serialize the return value.
-                    log.debug(localize('cmake.finished.returned.unserializable', '{0} finished (returned an unserializable value)', `[${id}] cmake.${name}`));
+                    //log.debug(localize('cmake.finished.returned.unserializable', '{0} finished (returned an unserializable value)', `[${id}] cmake.${name}`));
                 }
                 // Return the result of the command.
                 return ret;
@@ -1638,6 +1651,8 @@ async function setup(context: vscode.ExtensionContext, progress?: ProgressHandle
 
     // List of functions that will be bound commands
     const funs: (keyof ExtensionManager)[] = [
+        'buildDebug',
+        'launchDebug',
         'activeFolderName',
         'activeFolderPath',
         'activeConfigurePresetName',
@@ -1716,9 +1731,9 @@ async function setup(context: vscode.ExtensionContext, progress?: ProgressHandle
     // Register the functions before the extension is done loading so that fast
     // fingers won't cause "unregistered command" errors while CMake Tools starts
     // up. The command wrapper will await on the extension promise.
-    reportProgress(localize('loading.extension.commands', 'Loading extension commands'), progress);
+   // reportProgress(localize('loading.extension.commands', 'Loading extension commands'), progress);
     for (const key of funs) {
-        log.trace(localize('register.command', 'Register CMakeTools extension command {0}', `cmake.${key}`));
+        //log.trace(localize('register.command', 'Register CMakeTools extension command {0}', `cmake.${key}`));
         context.subscriptions.push(register(key));
     }
 

@@ -346,7 +346,7 @@ class DbgExtension implements DebugConfigurationProvider, DebugAdapterDescriptor
 
         if (launchConfig.request == 'launch' && ((launchConfig.program == '') || (launchConfig.program == undefined))) {
             // ToDo !!!
-            launchConfig.program = '${command:cmake.launchTargetPath}' 
+            launchConfig.program = '${command:cmake.buildDebug}' 
         }
 
         //let config = this.getExtensionConfig(folder);

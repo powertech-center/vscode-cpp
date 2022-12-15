@@ -8,6 +8,7 @@ import {
     createQueryFileForApi,
     loadCacheContent,
     loadCMakeFiles,
+    loadConfigurationTargets,
     loadConfigurationTargetMap,
     loadExtCodeModelContent,
     loadIndexFile,
@@ -82,7 +83,7 @@ export class CMakeFileApiDriver extends CMakeDriver {
     private _cache: Map<string, api.CacheEntry> = new Map<string, api.CacheEntry>();
     private _cmakeFiles: string[] | null = null;
     private _generatorInformation: Index.GeneratorInformation | null = null;
-    private _target_map: Map<string, api.Target[]> = new Map();
+    private _target_map: api.Target[] = [];//Map<string, api.Target[]> = new Map();
 
     async getGeneratorFromCache(cache_file_path: string): Promise<string> {
         const cache = await CMakeCache.fromPath(cache_file_path);
@@ -321,7 +322,7 @@ export class CMakeFileApiDriver extends CMakeDriver {
             if (!codemodel_obj) {
                 throw Error('No code model object found');
             }
-            this._target_map = await loadConfigurationTargetMap(reply_path, codemodel_obj.jsonFile);
+            this._target_map = await loadConfigurationTargets(reply_path, codemodel_obj.jsonFile);
             this._codeModelContent = await loadExtCodeModelContent(reply_path, codemodel_obj.jsonFile);
 
             // load toolchains
@@ -367,7 +368,7 @@ export class CMakeFileApiDriver extends CMakeDriver {
         return this._generatorInformation ? this._generatorInformation.name : null;
     }
     get targets(): api.Target[] {
-        const targets = this._target_map.get(this.currentBuildType);
+        const targets = this._target_map //.get(this.currentBuildType);
         if (targets) {
             const metaTargets = [{
                 type: 'rich' as 'rich',

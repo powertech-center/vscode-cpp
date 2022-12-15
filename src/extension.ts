@@ -5,7 +5,6 @@ import * as fs from 'fs';
 import * as toolchain from './toolchain';
 import * as thirdparty from './thirdparty';
 import * as cmakesyntax from "./cmake/cmake-syntax";
-import * as __cmake from "./cmake/__cmake";
 import * as cmake from "./cmake/cmake";
 import * as clangd from "./clangd/clangd";
 import * as lldb from "./lldb/main";
@@ -96,7 +95,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<Boolea
 	cmakesyntax.activate(context)
 
 	// CMake commands
-	__cmake.activate(context)
 	cmake.activate(context)	
 	
 

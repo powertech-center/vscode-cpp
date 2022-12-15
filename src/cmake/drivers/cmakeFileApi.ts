@@ -342,6 +342,8 @@ export async function loadCodeModelContent(filename: string): Promise<CodeModelK
     const expectedVersion = { major: 2, minor: 0 };
     const detectedVersion = codemodel.version;
 
+    // ToDo: sort codemodel targets!
+
     if (detectedVersion.major !== expectedVersion.major || detectedVersion.minor < expectedVersion.minor) {
         log.warning(localize(
             'code.model.version',
@@ -385,6 +387,10 @@ async function convertTargetObjectFileToExtensionTarget(buildDirectory: string, 
     } as api.RichTarget;
 }
 
+export async function loadAllTargets(replyPath: string, buildDirectory: string, configuration: CodeModelKind.Configuration): Promise<api.Target[]> {
+    return Promise.all(configuration.targets.map(t => convertTargetObjectFileToExtensionTarget(buildDirectory, path.join(replyPath, t.jsonFile))));
+}
+
 export async function loadAllTargetsForBuildTypeConfiguration(replyPath: string, buildDirectory: string, configuration: CodeModelKind.Configuration): Promise<{ name: string; targets: api.Target[] }> {
     const metaTargets = [];
     if (configuration.directories[0].hasInstallRule) {
@@ -395,12 +401,23 @@ export async function loadAllTargetsForBuildTypeConfiguration(replyPath: string,
             targetType: 'META'
         });
     }
-    const targetsList = await Promise.all(configuration.targets.map(t => convertTargetObjectFileToExtensionTarget(buildDirectory, path.join(replyPath, t.jsonFile))));
+    const targetsList = await loadAllTargets(replyPath, buildDirectory, configuration) //Promise.all(configuration.targets.map(t => convertTargetObjectFileToExtensionTarget(buildDirectory, path.join(replyPath, t.jsonFile))));
 
     return {
         name: configuration.name,
         targets: [...metaTargets, ...removeEmpty(targetsList)]
     };
+}
+
+export async function loadConfigurationTargets(replyPath: string, codeModelFileName: string): Promise<api.Target[]> {
+    const codeModelContent = await loadCodeModelContent(path.join(replyPath, codeModelFileName));
+    if (!codeModelContent) {
+        return [];
+    }
+    const buildDirectory = codeModelContent.paths.build;
+
+    return (await Promise.all(codeModelContent.configurations.map(
+        config => loadAllTargets(replyPath, buildDirectory, config)))).flat();
 }
 
 export async function loadConfigurationTargetMap(replyPath: string, codeModelFileName: string): Promise<Map<string, api.Target[]>> {

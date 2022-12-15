@@ -11,7 +11,14 @@ export interface CMakeExecutable {
     minimalFileApiModeVersion: util.Version;
 }
 
+let lastCMakeInstance: CMakeExecutable;
+
 export async function getCMakeExecutableInformation(path: string): Promise<CMakeExecutable> {
+    
+    if (lastCMakeInstance && lastCMakeInstance.path == path) {
+        return lastCMakeInstance
+    }
+    
     const cmake: CMakeExecutable = {
         path,
         isPresent: false,
@@ -40,5 +47,7 @@ export async function getCMakeExecutableInformation(path: string): Promise<CMake
         } catch {
         }
     }
+
+    lastCMakeInstance = cmake
     return cmake;
 }

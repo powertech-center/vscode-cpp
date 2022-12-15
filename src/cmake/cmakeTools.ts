@@ -1932,8 +1932,15 @@ export class CMakeTools implements api.CMakeToolsAPI {
     }
 
     async getCurrentLaunchTarget(): Promise<api.ExecutableTarget | null> {
-        const targetName = this.workspaceContext.state.launchTargetName;
-        const target = (await this.executableTargets).find(e => e.name === targetName);
+        const list: api.ExecutableTarget[] = await this.executableTargets
+        const name = "" //this.workspaceContext.state.launchTargetName;        
+        let target: api.ExecutableTarget
+        if (name) {
+            target = list.find(e => e.name === name);
+        }
+        else if (list.length != 0) {
+            target = list[list.length - 1]
+        }
 
         if (!target) {
             return null;
@@ -1948,11 +1955,8 @@ export class CMakeTools implements api.CMakeToolsAPI {
         const executable = await this.prepareLaunchTargetExecutable();
         if (!executable) {
             log.showChannel();
-            log.warning('=======================================================');
-            log.warning(localize('no.executable.target.found.to.launch', 'No executable target was found to launch. Please check:'));
-            log.warning(` - ${localize('have.you.called.add_executable', 'Have you called add_executable() in your CMake project?')}`);
-            log.warning(` - ${localize('have.you.configured', 'Have you executed a successful CMake configure?')}`);
-            log.warning(localize('no.program.will.be.executed', 'No program will be executed'));
+            log.warning('=========================================');
+            log.warning('No executable target was found to launch.');
             return null;
         }
         return executable.path;

@@ -192,7 +192,112 @@ export class ConfigurationReader implements vscode.Disposable {
     }
 
     static loadConfig(folder?: vscode.WorkspaceFolder): ExtensionConfigurationSettings {
-        const configData = vscode.workspace.getConfiguration('cmake', folder?.uri) as any as
+
+        //const cmakeConfig = vscode.workspace.getConfiguration('cmake', folder?.uri)
+        //fs.writeFileSync('C:/PowerTech/Production/VSCode/Extensions/CPP/cmakeConfig.json', JSON.stringify(cmakeConfig))
+
+        const cmakeConfig = {
+            "autoSelectActiveFolder": true,
+            "buildDirectory": "${workspaceFolder}/build",
+            "installPrefix": null,
+            "sourceDirectory": "${workspaceFolder}",
+            "saveBeforeBuild": true,
+            "buildBeforeRun": true,
+            "clearOutputBeforeBuild": true,
+            "configureSettings": {},
+            "cacheInit": null,
+            "preferredGenerators": [],
+            "generator": null,
+            "toolset": null,
+            "platform": null,
+            "configureArgs": [],
+            "buildArgs": [],
+            "buildToolArgs": [],
+            "parallelJobs": 0,
+            "ctestPath": null,
+            "ctest": {
+                "parallelJobs": 0
+            },
+            "parseBuildDiagnostics": true,
+            "enabledOutputParsers": [
+                "cmake",
+                "gcc",
+                "gnuld",
+                "msvc",
+                "ghs",
+                "diab"
+            ],
+            "debugConfig": {},
+            "defaultVariants": {
+                "buildType": {
+                    "default": "debug",
+                    "description": "%cmake-tools.configuration.cmake.defaultVariants.buildType.description%",
+                    "choices": {
+                        "debug": {
+                            "short": "Debug",
+                            "long": "%cmake-tools.configuration.cmake.defaultVariants.buildType.debug.long%",
+                            "buildType": "Debug"
+                        },
+                        "release": {
+                            "short": "Release",
+                            "long": "%cmake-tools.configuration.cmake.defaultVariants.buildType.release.long%",
+                            "buildType": "Release"
+                        },
+                        "minsize": {
+                            "short": "MinSizeRel",
+                            "long": "%cmake-tools.configuration.cmake.defaultVariants.buildType.minsize.long%",
+                            "buildType": "MinSizeRel"
+                        },
+                        "reldeb": {
+                            "short": "RelWithDebInfo",
+                            "long": "%cmake-tools.configuration.cmake.defaultVariants.buildType.reldeb.long%",
+                            "buildType": "RelWithDebInfo"
+                        }
+                    }
+                }
+            },
+            "ctestArgs": [],
+            "ctestDefaultArgs": [
+                "-T",
+                "test",
+                "--output-on-failure"
+            ],
+            "environment": {},
+            "configureEnvironment": {},
+            "buildEnvironment": {},
+            "testEnvironment": {},
+            "mingwSearchDirs": [
+                "${env:SystemDrive}/MinGW"
+            ],
+            "emscriptenSearchDirs": [],
+            "mergedCompileCommands": null,
+            "copyCompileCommands": null,
+            "configureOnOpen": false,
+            "configureOnEdit": true,
+            "setBuildTypeOnMultiConfig": false,
+            "skipConfigureIfCachePresent": null,
+            "cmakeCommunicationMode": "automatic",
+            "buildTask": false,
+            "outputLogEncoding": "auto",
+            "enableTraceLogging": false,
+            "loggingLevel": "info",
+            "touchbar": {
+                "visibility": "default",
+                "advanced": {}
+            },
+            "statusbar": {
+                "visibility": "default",
+                "advanced": {}
+            },
+            "revealLog": "always",
+            "exportCompileCommandsFile": true,
+            "useCMakePresets": "auto",
+            "allowCommentsInPresetsFile": false,
+            "launchBehavior": "reuseTerminal",
+            "ignoreCMakeListsMissing": false
+        }
+
+        const configData = cmakeConfig as any as
             ExtensionConfigurationSettings;
         const platformMap = {
             win32: 'windows',
