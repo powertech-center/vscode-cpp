@@ -8,13 +8,13 @@
 import * as chokidar from 'chokidar';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import * as cpt from 'vscode-cpptools';
+//import * as cpt from 'vscode-cpptools';
 import * as nls from 'vscode-nls';
 
 import { CMakeCache } from './cache';
 import { CMakeTools, ConfigureType, ConfigureTrigger } from './cmakeTools';
 import { ConfigurationReader, TouchBarConfig } from './config';
-import { CppConfigurationProvider, DiagnosticsCpptools } from './cpptools';
+//import { CppConfigurationProvider, DiagnosticsCpptools } from './cpptools';
 import { CMakeToolsFolderController, CMakeToolsFolder, DiagnosticsConfiguration, DiagnosticsSettings } from './folders';
 /*import {
     Kit,
@@ -67,7 +67,7 @@ interface Diagnostics {
     cmtVersion: string;
     configurations: DiagnosticsConfiguration[];
     settings: DiagnosticsSettings[];
-    cpptoolsIntegration: DiagnosticsCpptools;
+    //cpptoolsIntegration: DiagnosticsCpptools;
 }
 
 /**
@@ -295,8 +295,8 @@ class ExtensionManager implements vscode.Disposable {
      * CppTools project configuration provider. Tells cpptools how to search for
      * includes, preprocessor defs, etc.
      */
-    private readonly configProvider = new CppConfigurationProvider();
-    private cppToolsAPI?: cpt.CppToolsApi;
+    //private readonly configProvider = new CppConfigurationProvider();
+    //private cppToolsAPI?: cpt.CppToolsApi;
     private configProviderRegistered?: boolean = false;
 
     private checkFolderArgs(folder?: vscode.WorkspaceFolder): CMakeToolsFolder | undefined {
@@ -446,9 +446,9 @@ class ExtensionManager implements vscode.Disposable {
         this.onUseCMakePresetsChangedSub.dispose();
        // void this.kitsWatcher.close();
         this.projectOutlineTreeView.dispose();
-        if (this.cppToolsAPI) {
+        /*if (this.cppToolsAPI) {
             this.cppToolsAPI.dispose();
-        }
+        }*/
         // Dispose of each CMake Tools we still have loaded
         for (const cmtf of this.folders) {
             await cmtf.cmakeTools.asyncDispose();
@@ -569,7 +569,7 @@ class ExtensionManager implements vscode.Disposable {
         }*/
 
         if (!await this.folderIsCMakeProject(cmt)) {
-            await cmt.cmakePreConditionProblemHandler(CMakePreconditionProblems.MissingCMakeListsFile, false, this.workspaceConfig);
+           // await cmt.cmakePreConditionProblemHandler(CMakePreconditionProblems.MissingCMakeListsFile, false, this.workspaceConfig);
         } else {
             if (shouldConfigure === true) {
                 // We've opened a new workspace folder, and the user wants us to
@@ -695,15 +695,15 @@ class ExtensionManager implements vscode.Disposable {
                 log.debug(localize('update.intellisense.disabled', 'Not updating the configuration provider because {0} is set to {1}', '"C_Cpp.intelliSenseEngine"', '"Disabled"'));
                 return;
             }
-            if (!this.cppToolsAPI && !util.isTestMode()) {
+            /*if (!this.cppToolsAPI && !util.isTestMode()) {
                 try {
                     this.cppToolsAPI = await cpt.getCppToolsApi(cpt.Version.latest);
                 } catch (err) {
                     log.debug(localize('failed.to.get.cpptools.api', 'Failed to get cppTools API'));
                 }
-            }
+            }*/
 
-            if (this.cppToolsAPI && (/*cmt.activeKit ||*/ cmt.configurePreset)) {
+            /*if (this.cppToolsAPI && (cmt.activeKit || cmt.configurePreset)) {
                 const cpptools = this.cppToolsAPI;
                 let cache: CMakeCache;
                 try {
@@ -764,7 +764,7 @@ class ExtensionManager implements vscode.Disposable {
                     cpptools.didChangeCustomConfiguration(this.configProvider);
                     this.configProvider.markAsReady();
                 }
-            }
+            }*/
         });
     }
 
@@ -1040,9 +1040,9 @@ class ExtensionManager implements vscode.Disposable {
     }
 
     doRegisterCppTools() {
-        if (this.cppToolsAPI) {
+       /* if (this.cppToolsAPI) {
             this.cppToolsAPI.registerCustomConfigurationProvider(this.configProvider);
-        }
+        }*/
     }
 
     private cleanOutputChannel() {
@@ -1421,7 +1421,7 @@ class ExtensionManager implements vscode.Disposable {
             vscodeVersion: vscode.version,
             cmtVersion: util.thisExtensionPackage().version,
             configurations,
-            cpptoolsIntegration: this.configProvider.getDiagnostics(),
+            //cpptoolsIntegration: this.configProvider.getDiagnostics(),
             settings
         };
         const output = logging.channelManager.get("CMake Diagnostics");

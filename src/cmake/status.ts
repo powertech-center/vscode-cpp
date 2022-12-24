@@ -9,7 +9,7 @@ const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 // Helper functions
 function hasCPPTools(): boolean {
-    return vscode.extensions.getExtension('ms-vscode.cpptools') !== undefined;
+    return false // vscode.extensions.getExtension('ms-vscode.cpptools') !== undefined;
 }
 
 // Button class

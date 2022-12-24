@@ -83,10 +83,10 @@ export async function init(): Promise<Boolean> {
 
             isValid = (fileutils.fileExists(clangPath)) && 
                 (fileutils.fileExists(clangcppPath)) &&
+                (fileutils.fileExists(clangdPath)) /*&&
                 (fileutils.fileExists(clangclPath)) &&
-                (fileutils.fileExists(clangdPath)) &&
                 (fileutils.fileExists(lldbPath)) &&
-                (fileutils.fileExists(vscodelldbPath))
+                (fileutils.fileExists(vscodelldbPath))*/
         }
 
         // check is path PowerTech edition
