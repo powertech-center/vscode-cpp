@@ -14,7 +14,7 @@ jobs:
         
       - name: Version
         run: |
-          version=$(pwsh -c 'echo (Get-Date -Format "yy.MM.dd" -AsUTC)')
+          version=$(pwsh -c 'echo (Get-Date -Format "yy.MM.dd" -AsUTC).Replace(".0", ".")')
           echo $version
           echo "version=${version}" >> $GITHUB_ENV
           echo "vversion=v${version}" >> $GITHUB_ENV        

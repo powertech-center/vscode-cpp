@@ -2,11 +2,11 @@
 Set-Location $PSScriptRoot
 
 # version
-if ($Env:version -ne "") {
+if ("$Env:version" -ne "") {
     $Version = $Env:version
 }
 else {
-    $Version = Get-Date -Format "yy.MM.dd" -AsUTC
+    $Version = (Get-Date -Format "yy.MM.dd" -AsUTC).Replace(".0", ".")
 }
 $IsPublishing = ($null -ne $Env:VSCE_TOKEN) -and ($Env:VSCE_TOKEN -ne "")
 

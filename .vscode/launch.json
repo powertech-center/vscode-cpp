@@ -39,5 +39,13 @@
             "script": "./thirdparty-assets.ps1",
             "cwd": "${workspaceRoot}"
         }
+		,
+		{
+            "name": "Publish",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "./publish.ps1",
+            "cwd": "${workspaceRoot}"
+        }
 	]
 }
