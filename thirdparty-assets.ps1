@@ -63,6 +63,13 @@ class Project {
         if (($Ext -eq ".zip") -or  ($Ext -eq ".vsix")) {
             Expand-Archive -LiteralPath $FileName -DestinationPath $Directory -Force
         }        
+        elseif ($Ext -eq ".7z") {
+            $Global:LASTEXITCODE = 0
+            7z x $FileName "-o$Directory/"
+            if ($Global:LASTEXITCODE -ne 0) {
+		        throw "7z invalid operation, exit code: $LASTEXITCODE"
+	        }
+        }    
         elseif ($Ext -eq ".gz") {
             $TarFileName = $FileName.Substring(0, $FileName.Length - 3)
             if ((Split-Path -Path $TarFileName -Extension) -ne ".tar") {
@@ -184,11 +191,30 @@ class CodeLLDBProject: Project {
     }    
 }
 
+class PowerLLDBProject: Project {
+
+    PowerLLDBProject([Hashtable] $Values, [string] $Platform, [string] $Url, [string] $Version) 
+        : base($Values, $Platform, $Url, $Version) {
+        $this.TargetPath += "/lldb"
+    }
+
+    [void] Unpack() {
+        $this.Download($this.ArchivePath, $this.Url)
+        $this.Unarchive($this.TargetPath, $this.ArchivePath)
+
+        $VersionPath = "$($this.TargetPath)/version"
+        if ($this.Version -eq "") {
+            $this.Version = (Get-Content -Path $VersionPath -Raw).Trim()
+        }
+        Remove-Item $VersionPath
+    }    
+}
+
 
 try 
 {
     # initilization
-    if ($Env:version -ne "") {
+    if ($Env:version) {
         $ExtensionVersion = $Env:version
     }
     else {
@@ -201,7 +227,6 @@ try
     $Platforms = @(
         "windows-x64"
         "linux-x64"
-        "linux-arm64"
         "macos-x64"
         "macos-arm64"
     )
@@ -213,7 +238,6 @@ try
             "url" = @{
                 "windows-x64" = "https://github.com/ninja-build/ninja/releases/download/vVERSION/ninja-win.zip"
                 "linux-x64" = "https://github.com/ninja-build/ninja/releases/download/vVERSION/ninja-linux.zip"
-                "linux-arm64" = "https://github.com/ninja-build/ninja/releases/download/vVERSION/ninja-linux.zip"
                 "macos-x64" = "https://github.com/ninja-build/ninja/releases/download/vVERSION/ninja-mac.zip"
                 "macos-arm64" = "https://github.com/ninja-build/ninja/releases/download/vVERSION/ninja-mac.zip"
             }
@@ -230,7 +254,6 @@ try
             "url" = @{
                 "windows-x64" = "https://chrome-infra-packages.appspot.com/dl/gn/gn/windows-amd64/+/latest"
                 "linux-x64" = "https://chrome-infra-packages.appspot.com/dl/gn/gn/linux-amd64/+/latest"
-                "linux-arm64" = "https://chrome-infra-packages.appspot.com/dl/gn/gn/linux-arm64/+/latest"
                 "macos-x64" = "https://chrome-infra-packages.appspot.com/dl/gn/gn/mac-amd64/+/latest"
                 "macos-arm64" = "https://chrome-infra-packages.appspot.com/dl/gn/gn/mac-arm64/+/latest"
             }
@@ -242,7 +265,6 @@ try
             "url" = @{
                 "windows-x64" = "https://github.com/Kitware/CMake/releases/download/vVERSION/cmake-VERSION-windows-x86_64.zip"
                 "linux-x64" = "https://github.com/Kitware/CMake/releases/download/vVERSION/cmake-VERSION-linux-x86_64.tar.gz"
-                "linux-arm64" = "https://github.com/Kitware/CMake/releases/download/vVERSION/cmake-VERSION-linux-aarch64.tar.gz"
                 "macos-x64" = "https://github.com/Kitware/CMake/releases/download/vVERSION/cmake-VERSION-macos-universal.tar.gz"
                 "macos-arm64" = "https://github.com/Kitware/CMake/releases/download/vVERSION/cmake-VERSION-macos-universal.tar.gz"
             }
@@ -258,7 +280,6 @@ try
             "url" = @{
                 "windows-x64" = "https://github.com/vadimcn/vscode-lldb/releases/download/vVERSION/codelldb-x86_64-windows.vsix"
                 "linux-x64" = "https://github.com/vadimcn/vscode-lldb/releases/download/vVERSION/codelldb-x86_64-linux.vsix"
-                "linux-arm64" = "https://github.com/vadimcn/vscode-lldb/releases/download/vVERSION/codelldb-aarch64-linux.vsix"
                 "macos-x64" = "https://github.com/vadimcn/vscode-lldb/releases/download/vVERSION/codelldb-x86_64-darwin.vsix"
                 "macos-arm64" = "https://github.com/vadimcn/vscode-lldb/releases/download/vVERSION/codelldb-aarch64-darwin.vsix"
             }
@@ -268,6 +289,19 @@ try
                 "codelldb/adapter/codelldb"
             )
             "class" = [CodeLLDBProject]
+        },
+        @{
+            "name" = "PowerLLDB"
+            "url" = @{
+                "windows-x64" = "https://github.com/powertech-center/storage/raw/master/lldb/powerlldb-windows-x64.7z"
+                "linux-x64" = "https://github.com/powertech-center/storage/raw/master/lldb/powerlldb-linux-x64.7z"
+                "macos-x64" = "https://github.com/powertech-center/storage/raw/master/lldb/powerlldb-macos-x64.7z"
+                "macos-arm64" = "https://github.com/powertech-center/storage/raw/master/lldb/powerlldb-macos-arm64.7z"
+            }
+            "binaries" = @(
+                "lldb/lldb-vscode"
+            )
+            "class" = [PowerLLDBProject]
         }
     )
 

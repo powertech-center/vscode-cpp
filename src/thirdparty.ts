@@ -103,7 +103,7 @@ export async function actualize(context: vscode.ExtensionContext): Promise<Boole
             async (progress) => {
                 let lastPercentage = 0;
                 let reportProgress = (downloaded: number, contentLength: number) => {
-                    let percentage = Math.round(downloaded / contentLength * 90);
+                    let percentage = Math.round(downloaded / contentLength * 80);
                     progress.report({
                         message: `${percentage}%`,
                         increment: percentage - lastPercentage

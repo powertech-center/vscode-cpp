@@ -1,5 +1,5 @@
 import * as ajv from 'ajv';
-import * as chokidar from 'chokidar';
+//import * as chokidar from 'chokidar';
 import * as yaml from 'js-yaml';
 import * as json5 from 'json5';
 import * as path from 'path';
@@ -187,12 +187,12 @@ export class VariantManager implements vscode.Disposable {
     /**
      * Watches for changes to the variants file on the filesystem
      */
-    private readonly _variantFileWatcher = chokidar.watch([], { ignoreInitial: true, followSymlinks: false });
+    //private readonly _variantFileWatcher = chokidar.watch([], { ignoreInitial: true, followSymlinks: false });
 
     private customVariantsFileExists: boolean = false;
 
     dispose() {
-        void this._variantFileWatcher.close();
+       // void this._variantFileWatcher.close();
         this._activeVariantChanged.dispose();
     }
 
@@ -207,16 +207,16 @@ export class VariantManager implements vscode.Disposable {
         }
         // Ref: https://code.visualstudio.com/api/references/vscode-api#Uri
         const base_path = folder.uri.fsPath;
-        for (const filename of ['cmake-variants.yaml',
+        /*for (const filename of ['cmake-variants.yaml',
             'cmake-variants.json',
             '.vscode/cmake-variants.yaml',
             '.vscode/cmake-variants.json']) {
             this._variantFileWatcher.add(path.join(base_path, filename));
-        }
-        util.chokidarOnAnyChange(
+        }*/
+        /*util.chokidarOnAnyChange(
             this._variantFileWatcher,
             filePath => rollbar.invokeAsync(localize('reloading.variants.file', 'Reloading variants file {0}', filePath), () => this._reloadVariantsFile(filePath)));
-
+        */
         config.onChange('defaultVariants', () => {
             rollbar.invokeAsync(localize('reloading.variants.from.settings', 'Reloading variants from settings'), () => this._reloadVariantsFile());
         });

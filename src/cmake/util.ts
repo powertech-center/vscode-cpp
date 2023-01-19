@@ -1,5 +1,5 @@
 import * as child_process from 'child_process';
-import * as chokidar from 'chokidar';
+//import * as chokidar from 'chokidar';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
@@ -662,11 +662,11 @@ export function reportProgress(message: string, progress?: ProgressHandle) {
     }
 }
 
-export function chokidarOnAnyChange(watcher: chokidar.FSWatcher, listener: (path: string, stats?: fs.Stats | undefined) => void) {
+/*export function chokidarOnAnyChange(watcher: chokidar.FSWatcher, listener: (path: string, stats?: fs.Stats | undefined) => void) {
     return watcher.on('add', listener)
         .on('change', listener)
         .on('unlink', listener);
-}
+}*/
 
 export function isString(x: any): x is string {
     return Object.prototype.toString.call(x) === "[object String]";

@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as chokidar from 'chokidar';
+//import * as chokidar from 'chokidar';
 import * as path from 'path';
 import * as vscode from 'vscode';
 //import * as cpt from 'vscode-cpptools';

@@ -31,6 +31,13 @@
 				"${workspaceFolder}/dist/**/*.js"
 			],
 			"preLaunchTask": "tasks: watch-tests"
-		}
+		},
+		{
+            "name": "Thirdparty Assets",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "./thirdparty-assets.ps1",
+            "cwd": "${workspaceRoot}"
+        }
 	]
 }

@@ -1,4 +1,4 @@
-import * as chokidar from 'chokidar';
+//import * as chokidar from 'chokidar';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
@@ -25,7 +25,7 @@ const log = logging.createLogger('presetController');
 type SetPresetsFileFunc = (folder: string, presets: preset.PresetsFile | undefined) => void;
 
 export class PresetsController {
-    private _presetsWatcher: chokidar.FSWatcher | undefined;
+    //private _presetsWatcher: chokidar.FSWatcher | undefined;
     private _sourceDir: string = '';
     private _sourceDirChangedSub: vscode.Disposable | undefined;
     private _presetsFileExists = false;
@@ -1083,23 +1083,23 @@ export class PresetsController {
     }
 
     private async watchPresetsChange() {
-        if (this._presetsWatcher) {
+        /*if (this._presetsWatcher) {
             this._presetsWatcher.close().then(() => {}, () => {});
-        }
+        }*/
 
         const handler = () => {
             void this.reapplyPresets();
         };
-        this._presetsWatcher = chokidar.watch(this._referencedFiles, { ignoreInitial: true })
+        /*this._presetsWatcher = chokidar.watch(this._referencedFiles, { ignoreInitial: true })
             .on('add', handler)
             .on('change', handler)
-            .on('unlink', handler);
+            .on('unlink', handler);*/
     };
 
     dispose() {
-        if (this._presetsWatcher) {
+       /* if (this._presetsWatcher) {
             this._presetsWatcher.close().then(() => {}, () => {});
-        }
+        }*/
         if (this._sourceDirChangedSub) {
             this._sourceDirChangedSub.dispose();
         }
