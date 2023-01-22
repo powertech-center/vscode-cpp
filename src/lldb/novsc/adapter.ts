@@ -36,10 +36,10 @@ export async function getSpawnParams(
         args = args.concat(['--params', JSON.stringify(options.adapterParameters)]);
     }
     let env = getAdapterEnv(options.extraEnv);
-    env['RUST_TRACEBACK'] = '1';
+    /*env['RUST_TRACEBACK'] = '1';
     if (options.verboseLogging) {
         env['RUST_LOG'] = 'error,codelldb=debug';
-    }
+    }*/
 
     // Check if workDir exists and is a directory, otherwise launch with default cwd.
     let workDir = options.workDir;

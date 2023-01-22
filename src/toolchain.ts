@@ -13,7 +13,6 @@ export let clangcppPath: string = ""
 export let clangclPath: string = ""
 export let clangdPath: string = ""
 export let lldbPath: string = ""
-export let vscodelldbPath: string = ""
 
 export function clear() {
     isValid = false
@@ -22,8 +21,7 @@ export function clear() {
     clangcppPath = ""
     clangclPath = ""
     clangdPath = ""
-    lldbPath = ""
-    vscodelldbPath = ""    
+    lldbPath = ""    
 }
 
 function getConfigurationTarget(configuration: vscode.WorkspaceConfiguration, name: string): vscode.ConfigurationTarget {
@@ -40,6 +38,16 @@ function getConfigurationTarget(configuration: vscode.WorkspaceConfiguration, na
     }
 
     return ret
+}
+
+function binaryPath(directory: string, name: string): string {
+    let ret = path.join(directory, name + fileutils.binExt)
+    if (fileutils.fileExists(ret)) {
+        return ret
+    }
+    else {
+        return ""
+    }
 }
 
 export async function init(): Promise<Boolean> {
@@ -74,24 +82,19 @@ export async function init(): Promise<Boolean> {
 
         // check is path valid
         if (foundPath != '') {
-            clangPath = path.join(foundPath, clangBinName)
-            clangcppPath = path.join(foundPath, 'clang++' + fileutils.binExt)
-            clangclPath = path.join(foundPath, 'clang-cl' + fileutils.binExt)
-            clangdPath = path.join(foundPath, 'clangd' + fileutils.binExt)
-            lldbPath = path.join(foundPath, 'lldb' + fileutils.binExt)
-            vscodelldbPath = path.join(foundPath, 'lldb-vscode' + fileutils.binExt)  
+            clangPath = binaryPath(foundPath, 'clang')
+            clangcppPath = binaryPath(foundPath, 'clang++')
+            clangclPath = binaryPath(foundPath, 'clang-cl')
+            clangdPath = binaryPath(foundPath, 'clangd')
+            lldbPath = binaryPath(foundPath, 'lldb-vscode')
 
-            isValid = (fileutils.fileExists(clangPath)) && 
-                (fileutils.fileExists(clangcppPath)) &&
-                (fileutils.fileExists(clangdPath)) /*&&
-                (fileutils.fileExists(clangclPath)) &&
-                (fileutils.fileExists(lldbPath)) &&
-                (fileutils.fileExists(vscodelldbPath))*/
+            isValid = (clangPath != "") && (clangcppPath != "")
         }
 
         // check is path PowerTech edition
         if (isValid) {
-            isPowerTech = fileutils.directoryExists(path.join(foundPath, '..', 'targets'))
+            isPowerTech = fileutils.directoryExists(path.join(foundPath, '..', 'powercore'))
+            if (!isPowerTech) lldbPath = ""
             break
         }
 

@@ -88,7 +88,7 @@ export async function actualize(context: vscode.ExtensionContext): Promise<Boole
 	if (version == "0.0.0") {
 		let response = await async.https.get(projectUrl + "/releases/latest");
 		let location = response.headers.location
-		version = location.slice(location.length - 8)
+		version = location.slice(location.lastIndexOf("/v") + 2)
 	}
 	let thirdpartyUrl = `${projectUrl}/releases/download/v${version}/${archive_name}`
 
@@ -235,16 +235,24 @@ export function getNinjaPath(): string {
 export function getLLDBPath(): string {
 
     if (LLDBPath == undefined)
-        LLDBPath = path.join(thirdpartyPath, 'codelldb', 'bin', 'lldb')  + fileutils.binExt
+        LLDBPath = path.join(thirdpartyPath, 'codelldb', 'lldb', 'bin', 'lldb')  + fileutils.binExt
         
     return LLDBPath
 }
 
 export function getLibLLDBPath(): string {
 
-    if (libLLDBPath == undefined)
-        libLLDBPath = path.join(thirdpartyPath, 'codelldb', 'bin', 'liblldb')  + fileutils.libExt
-        
+    if (libLLDBPath == undefined) {
+        let platform: string = os.platform()
+        switch (platform) {
+            case "win32":
+            case "cygwin":
+                platform = "windows"
+                  break
+        }
+        libLLDBPath = path.join(thirdpartyPath, 'codelldb', 'lldb', (platform == 'windows')? 'bin':'lib', 'liblldb')  + fileutils.libExt
+    }    
+
     return libLLDBPath
 }
 

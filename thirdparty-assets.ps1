@@ -13,8 +13,8 @@ function Copy-Directory([string] $SourcePath, [string] $Directory)
     $null = New-Item $Directory -ItemType Directory -Force 
     Copy-Item -Path "$SourcePath/*" -Destination $Directory -Recurse -Force -ErrorAction Stop
 }
-$AssetsPath = "$PSScriptRoot/assets".Replace('\', '/')
-$TempPath = "$PSScriptRoot/.temp".Replace('\', '/')
+$Global:AssetsPath = "$PSScriptRoot/assets".Replace('\', '/')
+$Global:TempPath = "$PSScriptRoot/.temp".Replace('\', '/')
 New-Directory $AssetsPath
 New-Directory $TempPath
 
@@ -186,8 +186,9 @@ class CodeLLDBProject: Project {
         $this.Unarchive($this.TempPath, $this.ArchivePath)
 
         $SourcePath = "$($this.TempPath)/extension"
-        Copy-Directory "$SourcePath/lldb" $this.TargetPath
+        Copy-Directory "$SourcePath/lldb" "$($this.TargetPath)/lldb"
         Copy-Directory "$SourcePath/adapter" "$($this.TargetPath)/adapter"
+        Copy-Directory "$SourcePath/formatters" "$($this.TargetPath)/formatters"
     }    
 }
 
@@ -284,8 +285,8 @@ try
                 "macos-arm64" = "https://github.com/vadimcn/vscode-lldb/releases/download/vVERSION/codelldb-aarch64-darwin.vsix"
             }
             "binaries" = @(
-                "codelldb/bin/lldb"
-                "codelldb/bin/lldb-argdumper"
+                "codelldb/lldb/bin/lldb"
+                "codelldb/lldb/bin/lldb-argdumper"
                 "codelldb/adapter/codelldb"
             )
             "class" = [CodeLLDBProject]

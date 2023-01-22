@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as toolchain from './toolchain';
 import * as thirdparty from './thirdparty';
+import * as launch from './launch'; // ToDo
 import * as cmakesyntax from "./cmake/cmake-syntax";
 import * as cmake from "./cmake/cmake";
 import * as clangd from "./clangd/clangd";
@@ -30,8 +31,6 @@ export function setMakefileIsProject(value: boolean) {
 	vscode.commands.executeCommand('setContext', 'makefile:isPoject', value);
 }
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext): Promise<Boolean> {
 
 	// toolchain
@@ -125,6 +124,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<Boolea
 
 	// LLDB-based launcher/debugger
 	lldb.activate(context)
+
+	// launch manager (ToDo)
+	launch.activate(context)
 	
 	// On configure changed
 	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(event => {

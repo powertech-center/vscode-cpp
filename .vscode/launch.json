@@ -11,7 +11,7 @@
 			"request": "launch",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}",
-				"C:/PowerTech/Common"
+				"${workspaceFolder}/Sample"
 			],
 			"outFiles": [
 				"${workspaceFolder}/dist/**/*.js"
