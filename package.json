@@ -15,12 +15,27 @@
     "url": "https://github.com/powertech-center/vscode-cpp/issues"
   },
   "homepage": "https://powertech.center/clang",
-  "keywords": [],
+  "keywords": [
+    "C",
+    "C++",
+    "CPP",
+    "Clang",
+    "LLVM",
+    "LLDB",
+    "CMake",
+    "Ninja",
+    "GN",
+    "GYP"
+  ],
   "engines": {
     "vscode": "^1.73.0"
   },
   "categories": [
-    "Other"
+    "Programming Languages",
+    "Debuggers",
+    "Formatters",
+    "Linters",
+    "Snippets"
   ],
   "icon": "icon.jpg",
   "activationEvents": [

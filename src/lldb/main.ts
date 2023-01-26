@@ -362,7 +362,7 @@ class DbgExtension implements DebugConfigurationProvider, DebugAdapterDescriptor
         }
 
         launchConfig.relativePathBase = launchConfig.relativePathBase || workspace.rootPath;
-
+        launchConfig.expressions = 'native';
         launchConfig._adapterSettings = this.getAdapterSettings();
 
         output.appendLine(`Resolved debug configuration: ${inspect(launchConfig)}`);
