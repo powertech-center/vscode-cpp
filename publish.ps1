@@ -1,5 +1,13 @@
 
+# directories
 Set-Location $PSScriptRoot
+function Remove-Directory([string] $Directory) {
+    Remove-Item $Directory -Force -Recurse -ErrorAction SilentlyContinue
+}
+function New-Directory([string] $Directory) {
+    Remove-Directory $Directory
+    $null = New-Item $Directory -ItemType Directory -Force   
+}
 
 # version
 if ("$Env:version" -ne "") {
@@ -34,19 +42,32 @@ Move-Item $package_bak $package_json
 
 # manifest replacement replacement
 Write-Host "Manifest $FileName replacing..."
+# unarchive
 $ZipFileName = "$FileName.zip"
-$ManifestFileName = "extension.vsixmanifest"
-Move-Item $FileName $ZipFileName
-7z e $ZipFileName $ManifestFileName -y
+Rename-Item $FileName $ZipFileName
+$TempPath = "$PSScriptRoot/.temp".Replace('\', '/')
+New-Directory $TempPath 
+7z x $ZipFileName "-o$TempPath"
+Remove-Item $ZipFileName
+# tags replacement
+$ManifestFileName = "$TempPath/extension.vsixmanifest"
 $Manifest = Get-Content -Path $ManifestFileName -Raw
 $LeftPart = $Manifest.Substring(0, $Manifest.IndexOf("<Tags>") + "<Tags>".Length)
 $RightPart = $Manifest.Substring($Manifest.IndexOf("</Tags>"))
 $Tags = ((ConvertFrom-Json $Package).keywords -join ",")
 $Manifest = $LeftPart + $Tags + $RightPart
 Set-Content -Path $ManifestFileName -Value $Manifest
-7z a $ZipFileName $ManifestFileName
-Remove-Item $ManifestFileName
-Move-Item $ZipFileName $FileName
+# archive
+Set-Location $TempPath
+if ($ISLINUX) {
+    zip -r "../$ZipFileName" "."
+}
+else {
+    7z a "../$ZipFileName" "*"
+}
+Set-Location $PSScriptRoot
+Remove-Directory $TempPath
+Rename-Item $ZipFileName $FileName
 
 # publishing or local installation
 if ($IsPublishing) {
