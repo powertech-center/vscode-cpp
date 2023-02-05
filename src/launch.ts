@@ -35,7 +35,7 @@ class Launch implements DebugConfigurationProvider {
 
         if (launchConfig.request == 'launch' && ((launchConfig.program == '') || (launchConfig.program == undefined))) {
             // ToDo !!!
-            launchConfig.program = '${command:cmake.buildDebug}' 
+            launchConfig.program = '${command:cpp.buildDebug}' 
         }
 
         // done

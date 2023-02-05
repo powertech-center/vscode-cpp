@@ -101,22 +101,27 @@ export async function actualize(context: vscode.ExtensionContext): Promise<Boole
                 title: 'Downloading PowerTech C/C++ thirdparty tools'
             },
             async (progress) => {
+                const downloadPercentage: number = 80
                 let lastPercentage = 0;
-                let reportProgress = (downloaded: number, contentLength: number) => {
-                    let percentage = Math.round(downloaded / contentLength * 80);
+
+                let downloadTarget = path.join(os.tmpdir(), `powercpp-${process.pid}-${Math.floor(Math.random() * 1e10)}.zip`);
+                await download(vscode.Uri.parse(thirdpartyUrl), downloadTarget, (downloaded: number, contentLength: number) => {
+                    let percentage = Math.round(downloaded / contentLength * downloadPercentage);
                     progress.report({
                         message: `${percentage}%`,
                         increment: percentage - lastPercentage
                     });
                     lastPercentage = percentage;
-                };
+                });
 
-                let downloadTarget = path.join(os.tmpdir(), `powercpp-${process.pid}-${Math.floor(Math.random() * 1e10)}.zip`);
-
-                await download(vscode.Uri.parse(thirdpartyUrl), downloadTarget, reportProgress);
-
-                //await installVsix(context, downloadTarget);
-				await fileutils.unzip(downloadTarget, thirdpartyPath)
+				await fileutils.unzip(downloadTarget, thirdpartyPath, (totalSize: number, processedSize: number) => {
+                    let percentage = downloadPercentage + Math.round(processedSize / totalSize * (100 - downloadPercentage));
+                    progress.report({
+                        message: `${percentage}%`,
+                        increment: percentage - lastPercentage
+                    });
+                    lastPercentage = percentage;
+                });
 
                 progress.report({
                     message: 'installing',

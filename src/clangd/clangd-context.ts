@@ -5,7 +5,7 @@ import * as toolchain from '../toolchain';
 import * as ast from './ast';
 import * as config from './config';
 import * as configFileWatcher from './config-file-watcher';
-import * as fileStatus from './file-status';
+//import * as fileStatus from './file-status';
 import * as inlayHints from './inlay-hints';
 //import * as install from './install';
 import * as memoryUsage from './memory-usage';
@@ -166,7 +166,7 @@ export class ClangdContext implements vscode.Disposable {
     //openConfig.activate(this);
     this.client.start();
     console.log('Clang Language Server is now active!');
-    fileStatus.activate(this);
+   // fileStatus.activate(this);
     switchSourceHeader.activate(this);
     configFileWatcher.activate(this);
   }

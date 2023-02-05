@@ -1,16 +1,16 @@
 # PowerTech C/C++ for VSCode
 
-***This Extension is under development, please wait a several weeks...***
+*Please note that the extension is under active development. We will be glad for your participation in the development, testing and voicing of proposals. Feel free in [Issues](https://github.com/powertech-center/vscode-cpp/issues), [Discussions](https://github.com/powertech-center/vscode-cpp/discussions) or in the telegram group [PowerTech C/C++ Beta](https://t.me/powercpp_beta).*
 
 We care about Developers, so we create Simple, Powerful and Convenient tools for them. This Extension is intended for C/C++ Developers. We believe that the most functional, modern and promising compiler today is Clang ([LLVM](https://llvm.org) project), so we built our Extension relative to the Clang/LLVM infrastructure.
 
 We are glad to offer you to download [PowerTech Clang](https://github.com/powertech-center/clang/tree/beta#readme) fork. You will get not only all the standard functionality, but also additional ones, such as *Build Speed Boost*, *Cross Compilation*, *C/C++ Language Extensions*, etc.
 
 ### Features
+* Minimalistic interface
 * C/C++ syntax highlighting and IntelliSense (based on [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) and [clangd](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd))
 * Debugging (based on [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) and [CodeLLDB](https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb))
 * ToDo Remote launches
-* ToDo Support for unsaved files
 * ToDo Snippets
 
 ### Build systems
@@ -32,9 +32,17 @@ ToDo
 ToDo
 
 ### Recommendations
-We recommend that you install our [PowerTech Themes](https://marketplace.visualstudio.com/items?itemName=PowerTech.powerthemes) Extension, which will help make your work more comfortable and inspiring:
-* [PowerTech Dark](https://github.com/powertech-center/vscode-themes/#powertech-dark-based-on-default-dark-theme)
-* [PowerTech Light](https://github.com/powertech-center/vscode-themes/#powertech-light-based-on-default-light-theme)
+We recommend that you install our [PowerTech Themes Extension](https://marketplace.visualstudio.com/items?itemName=PowerTech.powerthemes), which will help make your work more comfortable and inspiring:
+* [PowerTech Dark/Light](https://github.com/powertech-center/vscode-themes/#powertech-dark-based-on-default-dark-theme)
+* [IntelliJ IDEA Dark/Light](https://github.com/powertech-center/vscode-themes/#intellij-idea-dark-based-on-intellij-one-dark-theme)
+* [Xcode Dark/Light](https://github.com/powertech-center/vscode-themes/#xcode-dark-based-on-xcode-theme)
+* [Embarcadero Dark/Light](https://github.com/powertech-center/vscode-themes/#embarcadero-dark-based-on-delphi-themes)
+* [Office Dark/Light](https://github.com/powertech-center/vscode-themes/#office-dark-based-on-office-theme)
+* [CLion](https://github.com/powertech-center/vscode-themes/#clion-based-on-clion-plus-theme)
+* [QtCreator](https://github.com/powertech-center/vscode-themes/#qtcreator-based-on-qtcreators-default-color-theme)
+* [GitHub](https://github.com/powertech-center/vscode-themes/#github-based-on-github-light-theme)
 * [Old-school DevC++](https://github.com/powertech-center/vscode-themes/#old-school-devc-based-on-dev-c-theme)
 * [Old-school Borland](https://github.com/powertech-center/vscode-themes/#old-school-borland-based-on-delphi-themes)
 * [Old-school DOS](https://github.com/powertech-center/vscode-themes/#old-school-dos-based-on-delphi-themes)
+
+![](https://github.com/powertech-center/vscode-themes/raw/master/images/overview.png)

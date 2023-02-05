@@ -48,7 +48,8 @@ export function findGlobalFile(fileName: string): string {
     return ret
 }
 
-export const unzip = (zipPath: string, unzipToDir: string) => {
+export const unzip = (zipPath: string, unzipToDir: string,
+    progress?: (totalSize: number, processedSize: number) => void) => {
     return new Promise<void>((resolve, reject) => {
         try {
             // Create folder if not exists
@@ -61,7 +62,9 @@ export const unzip = (zipPath: string, unzipToDir: string) => {
                     reject(err);
                     return;
                 }
-
+                let totalSize: number = zipFile.fileSize
+                let processedSize = 0
+               
                 // This is the key. We start by reading the first entry.
                 zipFile.readEntry();
 
@@ -87,6 +90,7 @@ export const unzip = (zipPath: string, unzipToDir: string) => {
                                     return;
                                 }
 
+                                processedSize += entry.compressedSize;
 								const filename = path.join(unzipToDir, entry.fileName)
                                 const file = fs.createWriteStream(filename);
                                 readStream.pipe(file);
@@ -96,6 +100,9 @@ export const unzip = (zipPath: string, unzipToDir: string) => {
                                     file.close(() => {
 										fs.chmod(filename, (entry.externalFileAttributes >> 16) & 0o7777, (err) => { });
                                         zipFile.readEntry();
+                                        if (progress) {
+                                            progress(totalSize, processedSize)
+                                        }
                                     });
 
                                     file.on('error', (err) => {
