@@ -32,16 +32,16 @@ export let output = window.createOutputChannel('LLDB');
 let dbginst: DbgExtension;
 
 // Main entry point
-export function activate(context: ExtensionContext) {
+export async function activate(context: ExtensionContext) {
     dbginst = new DbgExtension(context);
     dbginst.onActivate();
 }
 
-export function deactivate() {
+export async function deactivate() {
     dbginst.onDeactivate();
 }
 
-class DbgExtension implements DebugConfigurationProvider, DebugAdapterDescriptorFactory, UriHandler {
+class DbgExtension implements /*DebugConfigurationProvider,*/ DebugAdapterDescriptorFactory/*, UriHandler*/ {
     context: ExtensionContext;
     htmlViewer: htmlView.DebuggerHtmlView;
    // status: StatusBarItem;
@@ -54,7 +54,7 @@ class DbgExtension implements DebugConfigurationProvider, DebugAdapterDescriptor
 
         let subscriptions = context.subscriptions;
 
-        subscriptions.push(debug.registerDebugConfigurationProvider('powercpp', this));
+  //      subscriptions.push(debug.registerDebugConfigurationProvider('powercpp', this));
         subscriptions.push(debug.registerDebugAdapterDescriptorFactory('powercpp', this));
 
         subscriptions.push(commands.registerCommand('cpp.dbgOpenTerminal', () => this.commandPrompt()));
@@ -106,7 +106,7 @@ class DbgExtension implements DebugConfigurationProvider, DebugAdapterDescriptor
         this.loadedModules = new ModuleTreeDataProvider(context);
         subscriptions.push(window.registerTreeDataProvider('loadedModules', this.loadedModules));
 
-        subscriptions.push(window.registerUriHandler(this));
+        //subscriptions.push(window.registerUriHandler(this));
 
         this.startRpcServer();
     }
@@ -122,7 +122,7 @@ class DbgExtension implements DebugConfigurationProvider, DebugAdapterDescriptor
         }
     }
 
-    async handleUri(uri: Uri) {
+   /* async handleUri(uri: Uri) {
         try {
             output.appendLine(`Handling uri: ${uri}`);
             let query = decodeURIComponent(uri.query);
@@ -158,9 +158,9 @@ class DbgExtension implements DebugConfigurationProvider, DebugAdapterDescriptor
                 let args = stringArgv(cmdLine);
                 let program = args.shift();
                 let debugConfig: DebugConfiguration = {
+                    name: '',
                     type: 'powercpp',
                     request: 'launch',
-                    name: '',
                     program: program,
                     args: args,
                     env: env,
@@ -170,9 +170,9 @@ class DbgExtension implements DebugConfigurationProvider, DebugAdapterDescriptor
 
             } else if (uri.path == '/launch/config') {
                 let debugConfig: DebugConfiguration = {
-                    type: 'powercpp',
-                    request: 'launch',
                     name: '',
+                    type: 'powercpp',
+                    request: 'launch'                    
                 };
                 Object.assign(debugConfig, YAML.parse(query));
                 debugConfig.name = debugConfig.name || debugConfig.program;
@@ -184,7 +184,7 @@ class DbgExtension implements DebugConfigurationProvider, DebugAdapterDescriptor
         } catch (err) {
             await window.showErrorMessage(err.message);
         }
-    }
+    }*/
 
     startRpcServer() {
         if (this.rpcServer) {
@@ -201,9 +201,9 @@ class DbgExtension implements DebugConfigurationProvider, DebugAdapterDescriptor
             this.rpcServer = new SimpleServer({ allowHalfOpen: true });
             this.rpcServer.processRequest = async (request) => {
                 let debugConfig: DebugConfiguration = {
-                    type: 'powercpp',
-                    request: 'launch',
                     name: '',
+                    type: 'powercpp',
+                    request: 'launch'
                 };
                 Object.assign(debugConfig, YAML.parse(request));
                 debugConfig.name = debugConfig.name || debugConfig.program;
@@ -312,22 +312,22 @@ class DbgExtension implements DebugConfigurationProvider, DebugAdapterDescriptor
         qpick.show();
     }*/
 
-    async provideDebugConfigurations(
+  /*  async provideDebugConfigurations(
         workspaceFolder: WorkspaceFolder | undefined,
         cancellation?: CancellationToken
     ): Promise<DebugConfiguration[]> {
         return [{
+            name: 'Debug',
             type: 'powercpp',
             request: 'launch',
-            name: 'Debug',
-            program: '${workspaceFolder}/<executable file>',
+            program: '${workspaceFolder}/<executable file path>',
             args: [],
             cwd: '${workspaceFolder}'
         }];
     }
-
+*/
     // Invoked by VSCode to initiate a new debugging session.
-    async resolveDebugConfiguration(
+   /* async resolveDebugConfiguration(
         folder: WorkspaceFolder | undefined,
         launchConfig: DebugConfiguration,
         cancellation?: CancellationToken
@@ -367,7 +367,7 @@ class DbgExtension implements DebugConfigurationProvider, DebugAdapterDescriptor
 
         output.appendLine(`Resolved debug configuration: ${inspect(launchConfig)}`);
         return launchConfig;
-    }
+    }*/
 
     async createDebugAdapterDescriptor(session: DebugSession, executable: DebugAdapterExecutable | undefined): Promise<DebugAdapterDescriptor> {
         let settings = this.getAdapterSettings(session.workspaceFolder);

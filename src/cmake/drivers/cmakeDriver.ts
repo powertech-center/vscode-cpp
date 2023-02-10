@@ -601,6 +601,10 @@ export abstract class CMakeDriver implements vscode.Disposable {
         await this._refreshExpansions();
     }
 
+    setVariantBuildType(buildType: string) {
+        this._variantBuildType = buildType
+    }
+
     /**
      * The source directory, where the root CMakeLists.txt lives.
      *
@@ -1449,13 +1453,15 @@ export abstract class CMakeDriver implements vscode.Disposable {
         const exportCompileCommandsSetting = config.get<boolean>("exportCompileCommandsFile");
         const exportCompileCommandsFile: boolean = exportCompileCommandsSetting === undefined ? true : (exportCompileCommandsSetting || false);
         settingMap.CMAKE_EXPORT_COMPILE_COMMANDS = util.cmakeify(exportCompileCommandsFile);
+        //settingMap.CMAKE_EXPORT_COMPILE_COMMANDS.type = "UNKNOWN"
 
         const allowBuildTypeOnMultiConfig = config.get<boolean>("setBuildTypeOnMultiConfig") || false;
 
-        if (!this.isMultiConfFast || (this.isMultiConfFast && allowBuildTypeOnMultiConfig)) {
+        //if (!this.isMultiConfFast || (this.isMultiConfFast && allowBuildTypeOnMultiConfig)) {
             // Mutliconf generators do not need the CMAKE_BUILD_TYPE property
-            settingMap.CMAKE_BUILD_TYPE = util.cmakeify(this.currentBuildType);
-        }
+        //    settingMap.CMAKE_BUILD_TYPE = util.cmakeify(this.currentBuildType);
+        //}
+        settingMap['CMAKE_BUILD_TYPE'] = util.cmakeify(this.currentBuildType);
 
         // Only use the installPrefix config if the user didn't
         // provide one via configureSettings
@@ -1493,11 +1499,18 @@ export abstract class CMakeDriver implements vscode.Disposable {
         settingMap['CMAKE_MAKE_PROGRAM'] = { type: 'FILEPATH', value: thirdparty.getNinjaPath() } as util.CMakeValue;
 
         return util.objectPairs(settingMap).map(([key, value]) => {
-            switch (value.type) {
-                case 'UNKNOWN':
-                    return `-D${key}=${value.value}`;
-                default:
-                    return `-D${key}:${value.type}=${value.value}`;
+            //switch (value.type) {
+                //case 'UNKNOWN':
+                //    return `-D${key}=${value.value}`;
+                //default:
+                //    return `-D${key}:${value.type}=${value.value}`;
+          //  }
+            if (value.type == 'FILEPATH') {
+                let internalValue: string = value.value.split("\\").join("/")
+                return `-D${key}='${internalValue}'`;
+            } 
+            else {
+                return `-D${key}=${value.value}`;
             }
         });
     }

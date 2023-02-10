@@ -50,7 +50,11 @@ function binaryPath(directory: string, name: string): string {
     }
 }
 
-export async function init(): Promise<Boolean> {
+export async function activate(extension: vscode.ExtensionContext): Promise<Boolean> {
+    return await initialize()
+}
+
+export async function initialize(): Promise<Boolean> {
 
     while (true) {
         // clear values anyway
@@ -163,4 +167,8 @@ export async function init(): Promise<Boolean> {
 
     // result
     return isValid
+}
+
+
+export async function deactivate() {
 }

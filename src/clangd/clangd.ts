@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 
 import {ClangdContext} from './clangd-context';
 
+export let clangdContext: ClangdContext = undefined
+
 /**
  *  This method is called when the extension is activated. The extension is
  *  activated the very first time a command is executed.
@@ -10,7 +12,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const outputChannel = vscode.window.createOutputChannel('clangd');
   context.subscriptions.push(outputChannel);
 
-  const clangdContext = new ClangdContext;
+  clangdContext = new ClangdContext;
   context.subscriptions.push(clangdContext);
 
   // An empty place holder for the activate command, otherwise we'll get an
@@ -60,4 +62,11 @@ export async function activate(context: vscode.ExtensionContext) {
       }
     }, 5000);
   }*/
+}
+
+export async function deactivate() {
+  if (clangdContext) {
+    await clangdContext.dispose()
+    clangdContext = undefined
+  }
 }

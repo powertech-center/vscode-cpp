@@ -234,7 +234,7 @@ function cmake_help_all() {
 
 // this method is called when your extension is activated. activation is
 // controlled by the activation events defined in package.json
-export function activate(context: ExtensionContext) {
+export async function activate(context: ExtensionContext) {
 
     const CMAKE_LANGUAGE = 'cmake';
     const CMAKE_SELECTOR: DocumentSelector = [
@@ -559,3 +559,5 @@ class CMakeSuggestionSupport implements CompletionItemProvider {
 //         };
 //     }
 
+export async function deactivate() {
+}

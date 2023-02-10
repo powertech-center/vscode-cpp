@@ -4,7 +4,7 @@
 
 We care about Developers, so we create Simple, Powerful and Convenient tools for them. This Extension is intended for C/C++ Developers. We believe that the most functional, modern and promising compiler today is Clang ([LLVM](https://llvm.org) project), so we built our Extension relative to the Clang/LLVM infrastructure.
 
-We are glad to offer you to download [PowerTech Clang](https://github.com/powertech-center/clang/tree/beta#readme) fork. You will get not only all the standard functionality, but also additional ones, such as *Build Speed Boost*, *Cross Compilation*, *C/C++ Language Extensions*, etc.
+**Soon** we will glad to offer you to download [PowerTech Clang](https://github.com/powertech-center/clang/tree/beta#readme) fork. You will get not only all the standard functionality, but also additional ones, such as *Build Speed Boost*, *Cross Compilation*, *C/C++ Language Extensions*, etc.
 
 ### Features
 * Minimalistic interface
@@ -26,10 +26,27 @@ We are constantly working to improve our tools, keeping them Simple, and we real
 In the process of incremental development, as a rule, only a small part of the files changes, and for comfortable work, it is necessary to track dependencies in a smart way and not perform unnecessary actions. Therefore, by default, we try to convert files from your build systems to ours based on GYP and Ninja. But in the launcher settings, you can always turn off our optimization and use the standard system. By the way, this Extension already contains all the necessary build system dependencies, so you don't need to install additional utilities (except Python if using GYP).
 
 ### Quick Start
-ToDo
+* Create CMakeLists.txt
+* Write your program
+* Start debugging
+* Voila!
+
+![](/images/quick-start.gif)
 
 ### Launching
-ToDo
+The launcher supports many convenient options, they will be described later in the documentation. Here are some of them:
+|attribute          |type  |description  |
+|-------------------|------|-------------|
+|**build** | string | Build mode, which determines the size, composition of debug information, and other compiler options. The following are allowed: "debug", "release", "trace" and "minimize". The default is "debug". |
+|**target** |string | Target program for build system. You can specify the desired target or "all" (if the **program** parameter is specified). By default, unique or one of the executable targets is used.
+|**program** | string | Path to the final executable you want to debug. If the **target** parameter is not equal to "all", then **build** and **target** are ignored, the build does not run.
+|**args** | string or [string] | Command line parameters.  If this is a string, it will be split using shell-like syntax.
+|**cwd** | string | Working directory.
+|**env** | dictionary | Additional environment variables.
+|**preLaunchTask** | string | Task name (defined in the *.vscode/tasks.json file*) to run before debugging starts.
+|**postDebugTask** | string | Task name (defined in the *.vscode/tasks.json file*) run after the debug session has ended.
+
+![](/images/launch-snippets.png)
 
 ### Recommendations
 We recommend that you install our [PowerTech Themes Extension](https://marketplace.visualstudio.com/items?itemName=PowerTech.powerthemes), which will help make your work more comfortable and inspiring:

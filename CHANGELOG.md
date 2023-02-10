@@ -1,8 +1,11 @@
 # Change Log
 
-All notable changes to the "powercpp" extension will be documented in this file.
+## 23.2.10
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+- Minimalistic interface
+- C/C++ syntax highlighting and IntelliSense
+- Debugging
+- CMake support
 
 ## [Unreleased]
 

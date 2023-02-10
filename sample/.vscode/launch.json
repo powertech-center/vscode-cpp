@@ -5,6 +5,6 @@
             "name": "Debug",
             "type": "powercpp",
             "request": "launch"
-        }	
+        }
     ]
 }

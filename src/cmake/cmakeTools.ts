@@ -1951,12 +1951,9 @@ export class CMakeTools implements api.CMakeToolsAPI {
     /**
      * Implementation of `cmake.launchTargetPath`. This also ensures the target exists if `cmake.buildBeforeRun` is set.
      */
-    async launchTargetPath(): Promise<string | null> {
-        const executable = await this.prepareLaunchTargetExecutable();
+    async launchTargetPath(targetName?: string, buildType: string = "Debug"): Promise<string | null> {
+        const executable = await this.prepareLaunchTargetExecutable(targetName, buildType)
         if (!executable) {
-            log.showChannel();
-            log.warning('=========================================');
-            log.warning('No executable target was found to launch.');
             return null;
         }
         return executable.path;
@@ -2060,40 +2057,69 @@ export class CMakeTools implements api.CMakeToolsAPI {
         }
     }*/
 
-    async prepareLaunchTargetExecutable(name?: string): Promise<api.ExecutableTarget | null> {
+    getTargetDescription(name?: string): string {
+        if (!name || name == "") {
+            return "default target"
+        }
+        
+        let isPlural = false
+        if (name == "all" || name.includes(",")) {
+            isPlural = true
+        }
+
+        return `'${name}' ` + (isPlural? "targets" : "target")
+    }
+
+    showTargetWarning(step: string, name: string, buildType: string) {
+        let description = this.getTargetDescription(name)
+        vscode.window.showWarningMessage(`${step} ${description} (${buildType}) failed`);
+        log.showChannel()
+    }
+
+    async prepareLaunchTargetExecutable(name?: string, buildType: string = "DEBUG"): Promise<api.ExecutableTarget | null> {
         let chosen: api.ExecutableTarget;
 
-        // Ensure that we've configured the project already. If we haven't, `getOrSelectLaunchTarget` won't see any
-        // executable targets and may show an uneccessary prompt to the user
-        const isReconfigurationNeeded = await this.needsReconfigure();
+        let isReconfigurationNeeded = await this.needsReconfigure();
+        const drv: CMakeDriver | null = await this.getCMakeDriverInstance();
+        if (drv) {
+            if (drv.currentBuildType != buildType) {
+                isReconfigurationNeeded = true  
+            }
+            drv.setVariantBuildType(buildType)
+        }               
         if (isReconfigurationNeeded) {
             const rc = await this.configureInternal(ConfigureTrigger.launch, [], ConfigureType.Normal);
             if (rc !== 0) {
-                log.debug(localize('project.configuration.failed', 'Configuration of project failed.'));
+                //log.debug(localize('project.configuration.failed', 'Configuration of project failed.'));
+                this.showTargetWarning('Configure', name, buildType)
                 return null;
             }
         }
 
         if (name) {
             const found = (await this.executableTargets).find(e => e.name === name);
-            if (!found) {
-                return null;
-            }
-            chosen = found;
+            if (found) {
+                chosen = found
+            }            
         } else {
             const current = await this.getOrSelectLaunchTarget();
-            if (!current) {
-                return null;
+            if (current) {
+                chosen = current
             }
-            chosen = current;
+        }
+        if (!chosen) {
+            log.warning('No executable target was found to launch.');
+            this.showTargetWarning('Launch', name, buildType)
+            return null
         }
 
         const buildOnLaunch = this.workspaceContext.config.buildBeforeRun;
         if (buildOnLaunch || isReconfigurationNeeded) {
             const buildResult = await this.build([chosen.name]);
             if (buildResult !== 0) {
-                log.debug(localize('build.failed', 'Build failed'));
-                return null;
+                //log.debug(localize('build.failed', 'Build failed'));
+                this.showTargetWarning('Build', name, buildType)
+                return null
             }
         }
 

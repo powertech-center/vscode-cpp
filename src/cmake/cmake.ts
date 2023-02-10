@@ -56,7 +56,7 @@ const hideBuildCommandKey = 'cmake:hideBuildCommand';
  * The global extension manager. There is only one of these, even if multiple
  * backends.
  */
-let extensionManager: ExtensionManager | null = null;
+export let extensionManager: ExtensionManager | null = null;
 
 type CMakeToolsMapFn = (cmt: CMakeTools) => Thenable<any>;
 type CMakeToolsQueryMapFn = (cmt: CMakeTools) => Thenable<string | string[] | null>;
@@ -1294,6 +1294,11 @@ class ExtensionManager implements vscode.Disposable {
     buildDebug(targetName?: string /* ToDo */) {
         //telemetry.logEvent("substitution", { command: "launchTargetPath" });
         return this.mapQueryCMakeTools(cmt => cmt.launchTargetPath());
+    }
+
+    prepareLaunchTargetExecutable(targetName?: string, buildType: string = "Debug") {
+        //telemetry.logEvent("substitution", { command: "launchTargetPath" });
+        return this.mapQueryCMakeTools(cmt => cmt.launchTargetPath(targetName, buildType))
     }
 
     launchDebug(targetName?: string) {

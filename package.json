@@ -53,7 +53,7 @@
     "onLanguage:objective-cpp",
     "onUri"
   ],
-  "main": "./dist/extension.js",
+  "main": "./dist/main.js",
   "contributes": {
     "languages": [
       {
@@ -587,6 +587,35 @@
         "configurationAttributes": {
           "launch": {
             "properties": {
+              "build": {
+                "description": "Build mode, which determines the size, composition of debug information, and other compiler options.",
+                "type": "string",
+                "enum": [
+                  "debug",
+                  "debug+",
+                  "release",
+                  "release+",
+                  "trace",
+                  "trace+",
+                  "minimize",
+                  "minimize+"
+                ],
+                "enumDescriptions": [
+                  "Debug mode: increased binaries size, full debugging capabilities",
+                  "Advanced debug mode: increased binaries size, full debugging capabilities",
+                  "Release mode: compact size, very high speed, no debug information",
+                  "Advanced release mode: compact size, very high speed, no debug information",
+                  "Trace mode: medium size, high speed, basic debug information",
+                  "Advanced trace mode: medium size, high speed, basic debug information",
+                  "Minimize mode: minimal size, very high speed, no debug information",
+                  "Advanced minimize mode: minimal size, very high speed, no debug information"
+                ]
+              },
+              "target": {
+                "description": "Platform and target program for build system.",
+                "type": "string",
+                "default": ""
+              },
               "program": {
                 "description": "Path to the program to debug.",
                 "type": "string",
@@ -915,7 +944,7 @@
             }
           },
           {
-            "label": "C/C++: Debug running by Path",
+            "label": "C/C++: Debug running program by Path",
             "description": "Attach to a running instance of the specified program.",
             "body": {
               "name": "Attach",
@@ -925,7 +954,7 @@
             }
           },
           {
-            "label": "C/C++: Debug running by PID",
+            "label": "C/C++: Debug running program by PID",
             "description": "Attach to a running process with the specified process id.",
             "body": {
               "name": "Attach PID",
@@ -938,7 +967,7 @@
       },
       {
         "type": "powercpp__",
-        "label": "PowerTech C/C++ Debugger",
+        "label": "PowerTech C/C++ Debugger (Experimental)",
         "languages": [
           "c",
           "cpp",
@@ -952,6 +981,35 @@
         "configurationAttributes": {
           "launch": {
             "properties": {
+              "build": {
+                "description": "Build mode, which determines the size, composition of debug information, and other compiler options.",
+                "type": "string",
+                "enum": [
+                  "debug",
+                  "debug+",
+                  "release",
+                  "release+",
+                  "trace",
+                  "trace+",
+                  "minimize",
+                  "minimize+"
+                ],
+                "enumDescriptions": [
+                  "Debug mode: increased binaries size, full debugging capabilities",
+                  "Advanced debug mode: increased binaries size, full debugging capabilities",
+                  "Release mode: compact size, very high speed, no debug information",
+                  "Advanced release mode: compact size, very high speed, no debug information",
+                  "Trace mode: medium size, high speed, basic debug information",
+                  "Advanced trace mode: medium size, high speed, basic debug information",
+                  "Minimize mode: minimal size, very high speed, no debug information",
+                  "Advanced minimize mode: minimal size, very high speed, no debug information"
+                ]
+              },
+              "target": {
+                "description": "Platform and target program for build system.",
+                "type": "string",
+                "default": ""
+              },
               "program": {
                 "type": "string",
                 "description": "Path to the program to debug.",

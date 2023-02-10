@@ -176,7 +176,7 @@ export class ClangdContext implements vscode.Disposable {
         (e) => isClangdDocument(e.document));
   }
 
-  dispose() {
+  async dispose() {
     this.subscriptions.forEach((d) => { d.dispose(); });
     this.client.stop();
     this.subscriptions = []

@@ -16,7 +16,7 @@ let NinjaPath: string
 let LLDBPath: string
 let libLLDBPath: string
 
-export async function actualize(context: vscode.ExtensionContext): Promise<Boolean> {
+export async function activate(context: vscode.ExtensionContext): Promise<Boolean> {
 
     extensionPath = context.extensionPath
     thirdpartyPath = path.join(extensionPath, 'thirdparty')
@@ -261,5 +261,6 @@ export function getLibLLDBPath(): string {
     return libLLDBPath
 }
 
-
+export async function deactivate() {
+}
 
