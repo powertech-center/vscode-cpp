@@ -62,10 +62,19 @@
           ".cmake"
         ],
         "filenames": [
-          "CMakelists.txt"
+          "CMakeLists.txt"
         ],
         "aliases": [
           "CMake"
+        ]
+      },
+      {
+        "id": "cmake-cache",
+        "filenames": [
+          "CMakeCache.txt"
+        ],
+        "aliases": [
+          "CMake Cache"
         ]
       },
       {
@@ -126,7 +135,12 @@
       {
         "language": "cmake",
         "scopeName": "source.cmake",
-        "path": "languages/CMake.tmLanguage"
+        "path": "./languages/CMake.tmLanguage"
+      },
+      {
+        "language": "cmake-cache",
+        "scopeName": "source.cmakecache",
+        "path": "./languages/CMakeCache.tmLanguage"
       },
       {
         "language": "gn",
@@ -158,7 +172,6 @@
         "command": "cpp.buildDebug",
         "title": "Build CMAKE_BUILD_TYPE=Debug"
       },
-
       {
         "category": "GN",
         "command": "cpp.gnClean",
@@ -301,7 +314,6 @@
         "enablement": "debugType == 'powercpp'"
       }
     ],
-
     "taskDefinitions": [
       {
         "type": "cmake",
@@ -357,7 +369,6 @@
         }
       }
     ],
-
     "keybindings": [
       {
         "command": "cpp.switchheadersource",
@@ -370,7 +381,6 @@
         "when": "editorTextFocus"
       }
     ],
-
     "viewsContainers": {
       "activitybar": [
         {
@@ -380,7 +390,6 @@
         }
       ]
     },
-
     "views": {
       "cpp__viewContainer": [
         {
@@ -388,7 +397,6 @@
           "name": "Projects"
         }
       ],
-
       "explorer": [
         {
           "id": "cpp.typeHierarchyView",
@@ -470,15 +478,10 @@
           "when": "viewItem == cpp.dbgModuleProperty"
         }
       ],
-      "editor/title/context": [
-      ],
-      "editor/title": [
-      ],
-      "explorer/context": [
-      ],
-      "touchBar": [
-      ],
-
+      "editor/title/context": [],
+      "editor/title": [],
+      "explorer/context": [],
+      "touchBar": [],
       "commandPalette": [
         {
           "command": "cpp.switchheadersource",
@@ -542,7 +545,6 @@
     "configuration": {
       "title": "C/C++",
       "properties": {
-        
         "cpp.path": {
           "type": "string",
           "description": "C/C++ binaries path. By default, the global search for the compiler and other utilities is used."

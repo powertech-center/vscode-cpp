@@ -13,6 +13,14 @@ We care about Developers, so we create Simple, Powerful and Convenient tools for
 * ToDo Remote launches
 * ToDo Snippets
 
+### Quick Start
+* Create CMakeLists.txt
+* Write your program
+* Start debugging
+* Voila!
+
+![](/images/quick-start.gif)
+
 ### Build systems
 We are constantly working to improve our tools, keeping them Simple, and we really hope that they help Developers do their work more efficiently. We talked to the Developers, saw how many different build systems they use, and decided to support almost every one:
 * CMake (based on [CMake](https://marketplace.visualstudio.com/items?itemName=twxs.cmake) and [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools))
@@ -24,14 +32,6 @@ We are constantly working to improve our tools, keeping them Simple, and we real
 * ToDo Makefile (base on [Makefile Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.makefile-tools))
 
 In the process of incremental development, as a rule, only a small part of the files changes, and for comfortable work, it is necessary to track dependencies in a smart way and not perform unnecessary actions. Therefore, by default, we try to convert files from your build systems to ours based on GYP and Ninja. But in the launcher settings, you can always turn off our optimization and use the standard system. By the way, this Extension already contains all the necessary build system dependencies, so you don't need to install additional utilities (except Python if using GYP).
-
-### Quick Start
-* Create CMakeLists.txt
-* Write your program
-* Start debugging
-* Voila!
-
-![](/images/quick-start.gif)
 
 ### Launching
 The launcher supports many convenient options, they will be described later in the documentation. Here are some of them:

@@ -74,7 +74,7 @@ function commandArgs2Array(text: string): string[] {
 let cmake = (args: string[]): Promise<string> => {
     return new Promise(function (resolve, reject) {
         let cmake_config = thirdparty.getCMakePath() //config<string>('cmakePath', 'cmake');
-        let cmake_args = commandArgs2Array(cmake_config)
+        let cmake_args = [cmake_config] //commandArgs2Array(cmake_config)
         let cmd = child_process.spawn(cmake_args[0], cmake_args.slice(1, cmake_args.length)
                 .concat(args.map(arg => { return arg.replace(/\r/gm, ''); })));
         let stdout: string = '';

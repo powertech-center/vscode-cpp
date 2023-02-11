@@ -12,6 +12,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         
+      - name: LFS update
+        run: |
+          git lfs pull
+        
       - name: Version
         run: |
           version=$(pwsh -c 'echo (Get-Date -Format "yy.MM.dd" -AsUTC).Replace(".0", ".")')
