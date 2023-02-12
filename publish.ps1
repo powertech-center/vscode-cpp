@@ -60,7 +60,7 @@ Set-Content -Path $ManifestFileName -Value $Manifest
 # archive
 Set-Location $TempPath
 if ($ISLINUX) {
-    zip -r "../$ZipFileName" "."
+    zip -q -r "../$ZipFileName" "."
 }
 else {
     7z a "../$ZipFileName" "*"
