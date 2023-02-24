@@ -1,8 +1,7 @@
 # PowerTech C/C++ for VSCode
+> We care about Developers, so we create Simple, Powerful and Convenient tools for them. This Extension is intended for C/C++ Developers. We believe that the most functional, modern and promising compiler today is Clang ([LLVM](https://llvm.org) project), so we built our Extension relative to the Clang/LLVM infrastructure.
 
 *Please note that the extension is under active development. We will be glad for your participation in the development, testing and voicing of proposals. Feel free in [Issues](https://github.com/powertech-center/vscode-cpp/issues), [Discussions](https://github.com/powertech-center/vscode-cpp/discussions) or in the telegram group [PowerTech C/C++ Beta](https://t.me/powercpp_beta).*
-
-We care about Developers, so we create Simple, Powerful and Convenient tools for them. This Extension is intended for C/C++ Developers. We believe that the most functional, modern and promising compiler today is Clang ([LLVM](https://llvm.org) project), so we built our Extension relative to the Clang/LLVM infrastructure.
 
 **We invite you to download our [PowerTech Clang](https://github.com/powertech-center/clang) fork**. You will get not only all the standard functionality, but also additional ones, such as *Build Speed Boost*, *Cross Compilation*, *C/C++ Language Extensions*, etc.
 
