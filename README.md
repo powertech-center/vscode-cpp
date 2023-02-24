@@ -4,7 +4,7 @@
 
 We care about Developers, so we create Simple, Powerful and Convenient tools for them. This Extension is intended for C/C++ Developers. We believe that the most functional, modern and promising compiler today is Clang ([LLVM](https://llvm.org) project), so we built our Extension relative to the Clang/LLVM infrastructure.
 
-**Soon** we will glad to offer you to download [PowerTech Clang](https://github.com/powertech-center/clang/tree/beta#readme) fork. You will get not only all the standard functionality, but also additional ones, such as *Build Speed Boost*, *Cross Compilation*, *C/C++ Language Extensions*, etc.
+**We invite you to download our [PowerTech Clang](https://github.com/powertech-center/clang) fork**. You will get not only all the standard functionality, but also additional ones, such as *Build Speed Boost*, *Cross Compilation*, *C/C++ Language Extensions*, etc.
 
 # Features
 * Minimalistic interface
