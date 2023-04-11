@@ -14,7 +14,7 @@ if ("$Env:version" -ne "") {
     $Version = $Env:version
 }
 else {
-    $Version = (Get-Date -Format "yy.MM.dd" -AsUTC).Replace(".0", ".")
+    $Version = (Get-Date -AsUTC).AddHours(3).ToString("yy.MM.dd").Replace(".0", ".")
 }
 $IsPublishing = ($null -ne $Env:VSCE_TOKEN) -and ($Env:VSCE_TOKEN -ne "")
 

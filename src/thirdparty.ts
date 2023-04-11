@@ -33,7 +33,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<Boolea
 		let directory = fs.statSync(fullPath).isDirectory()
 		let remove = true
 		
-		if ((directory) && (name == "gyp")) {
+		if ((directory) && ((name == "gyp") || (name == "meson"))) {
 			remove = false
 		}
 

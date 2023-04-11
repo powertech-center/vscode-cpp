@@ -18,7 +18,11 @@ $Global:TempPath = "$PSScriptRoot/.temp".Replace('\', '/')
 New-Directory $AssetsPath
 New-Directory $TempPath
 
-# binary rules
+# binaries
+$Global:BinaryExt = ""
+if ($Global:IsWindows) {
+    $Global:BinaryExt = ".exe" 
+}
 function Set-ExecutablePermissions($Path) {
     if (($IsLinux) -or ($IsMacOS)) {
         chmod +x $Path
@@ -35,6 +39,7 @@ class Project {
     [string] $Platform
     [string] $OS
     [string] $Architecture
+    [string] $BinaryExt
     [string] $Url
     [string] $Version
 
@@ -47,6 +52,10 @@ class Project {
         $this.Platform = $Platform
         $this.OS = $Platform.Substring(0, $Platform.IndexOf("-"))
         $this.Architecture = $Platform.Substring($Platform.LastIndexOf("-") + 1)
+        $this.BinaryExt = ""
+        if ($this.OS -eq "windows") {
+            $this.BinaryExt = ".exe" 
+        }
         $this.Url = $Url
         $this.Version = $Version
 
@@ -100,10 +109,12 @@ class Project {
     }
 
     [void] RemoveBinary([string] $FileName) {
-        if ($this.OS -eq "windows") {
-            $Local:FileName += ".exe" 
-        }
-        Remove-Item $FileName -Force -Recurse -ErrorAction SilentlyContinue 
+        Remove-Item "$FileName$($this.BinaryExt)" -Force -Recurse -ErrorAction SilentlyContinue 
+    }
+
+    [string] ExtractVersion() {
+        Write-Host "Extract  logic of $($this.Name) project not yet defined"
+        return ""
     }
 }
 
@@ -115,6 +126,31 @@ class NinjaProject: Project {
     [void] Unpack() {
         $this.Download($this.ArchivePath, $this.Url)
         $this.Unarchive("$($this.TargetPath)/bin", $this.ArchivePath)
+    }
+
+    [string] ExtractVersion() {
+        $BinaryPath = "$($this.TargetPath)/bin/ninja$Global:BinaryExt"
+        Set-ExecutablePermissions $BinaryPath
+        $Version = (Invoke-Expression "$BinaryPath --version").Trim().Replace(".git", "")
+        return $Version
+    }
+}
+
+class MakefileProject: Project {
+
+    MakefileProject([Hashtable] $Values, [string] $Platform, [string] $Url, [string] $Version) 
+        : base($Values, $Platform, $Url, $Version) {}
+
+    [void] Unpack() {
+        $this.Download($this.ArchivePath, $this.Url)
+        $this.Unarchive("$($this.TargetPath)/bin", $this.ArchivePath)
+    }
+
+    [string] ExtractVersion() {
+        $BinaryPath = "$($this.TargetPath)/bin/make$Global:BinaryExt"
+        Set-ExecutablePermissions $BinaryPath
+        $Version = (Invoke-Expression "$BinaryPath --version")[0].Trim().Replace("GNU Make ", "")
+        return $Version
     }
 }
 
@@ -128,23 +164,16 @@ class GNProject: Project {
     [void] Unpack() {
         $this.Download($this.ArchivePath, $this.Url)
         $this.Unarchive("$($this.TargetPath)/bin", $this.ArchivePath)
+    }
 
-        if ($this.Version -eq "") {
-            if ((($Global:IsWindows) -and ($this.Platform -eq "windows-x64")) -or 
-                (($Global:IsLinux) -and ($this.Platform -eq "linux-x64")) -or 
-                (($Global:IsMacOS) -and ($this.Platform -eq "macos-x64"))) {
-                    $BinaryPath = "$($this.TargetPath)/bin/gn"
-                    if ($Global:IsWindows) {
-                        $BinaryPath += ".exe" 
-                    }
-                    Set-ExecutablePermissions $BinaryPath
-                    $Version = (Invoke-Expression "$BinaryPath --version").Trim()
-                    if ($Version.IndexOf(" ") -ge 0) {
-                        $Version = $Version.Substring(0, $Version.IndexOf(" ")) 
-                    }
-                    $this.Version = $Version
-                }
+    [string] ExtractVersion() {
+        $BinaryPath = "$($this.TargetPath)/bin/gn$Global:BinaryExt"
+        Set-ExecutablePermissions $BinaryPath
+        $Version = (Invoke-Expression "$BinaryPath --version").Trim()
+        if ($Version.IndexOf(" ") -ge 0) {
+            $Version = $Version.Substring(0, $Version.IndexOf(" ")) 
         }
+        return $Version
     }
 }
 
@@ -203,6 +232,11 @@ class PowerLLDBProject: Project {
         $this.Download($this.ArchivePath, $this.Url)
         $this.Unarchive($this.TargetPath, $this.ArchivePath)
 
+        $ServerPath = "$($this.TargetPath)/lldb-server$($this.BinaryExt)"
+        if ($this.OS -ne "linux") {
+            Remove-Item $ServerPath
+        }
+
         $VersionPath = "$($this.TargetPath)/version"
         if ($this.Version -eq "") {
             $this.Version = (Get-Content -Path $VersionPath -Raw).Trim()
@@ -219,7 +253,7 @@ try
         $ExtensionVersion = $Env:version
     }
     else {
-        $ExtensionVersion = Get-Date -Format "yy.MM.dd" -AsUTC
+        $ExtensionVersion = (Get-Date -AsUTC).AddHours(3).ToString("yy.MM.dd").Replace(".0", ".")
     }
     $Versions = @{
         "Extension" = $ExtensionVersion
@@ -228,6 +262,7 @@ try
     $Platforms = @(
         "windows-x64"
         "linux-x64"
+        "linux-arm64"
         "macos-x64"
         "macos-arm64"
     )
@@ -237,24 +272,33 @@ try
         @{
             "name" = "Ninja"
             "url" = @{
-                "windows-x64" = "https://github.com/ninja-build/ninja/releases/download/vVERSION/ninja-win.zip"
-                "linux-x64" = "https://github.com/ninja-build/ninja/releases/download/vVERSION/ninja-linux.zip"
-                "macos-x64" = "https://github.com/ninja-build/ninja/releases/download/vVERSION/ninja-mac.zip"
-                "macos-arm64" = "https://github.com/ninja-build/ninja/releases/download/vVERSION/ninja-mac.zip"
+                "windows-x64" = "https://powertech.center/thirdparty/ninja/powerninja-windows-x64.7z"
+                "linux-x64" = "https://powertech.center/thirdparty/ninja/powerninja-linux-x64.7z"
+                "linux-arm64" = "https://powertech.center/thirdparty/ninja/powerninja-linux-arm64.7z"
+                "macos-x64" = "https://powertech.center/thirdparty/ninja/powerninja-macos-x64.7z"
+                "macos-arm64" = "https://powertech.center/thirdparty/ninja/powerninja-macos-arm64.7z"
             }
             "binaries" = "bin/ninja"
             "class" = [NinjaProject]
         },
         @{
-            "name" = "ToDo Makefile"
-            "url" = ""
-            "class" = $null
+            "name" = "Makefile"
+            "url" = @{
+                "windows-x64" = "https://powertech.center/thirdparty/make/powermake-windows-x64.7z"
+                "linux-x64" = "https://powertech.center/thirdparty/make/powermake-linux-x64.7z"
+                "linux-arm64" = "https://powertech.center/thirdparty/make/powermake-linux-arm64.7z"
+                "macos-x64" = "https://powertech.center/thirdparty/make/powermake-macos-x64.7z"
+                "macos-arm64" = "https://powertech.center/thirdparty/make/powermake-macos-arm64.7z"
+            }
+            "binaries" = "bin/make"
+            "class" = [MakefileProject]
         },
         @{
             "name" = "GN"
             "url" = @{
                 "windows-x64" = "https://chrome-infra-packages.appspot.com/dl/gn/gn/windows-amd64/+/latest"
                 "linux-x64" = "https://chrome-infra-packages.appspot.com/dl/gn/gn/linux-amd64/+/latest"
+                "linux-arm64" = "https://chrome-infra-packages.appspot.com/dl/gn/gn/linux-arm64/+/latest"
                 "macos-x64" = "https://chrome-infra-packages.appspot.com/dl/gn/gn/mac-amd64/+/latest"
                 "macos-arm64" = "https://chrome-infra-packages.appspot.com/dl/gn/gn/mac-arm64/+/latest"
             }
@@ -266,6 +310,7 @@ try
             "url" = @{
                 "windows-x64" = "https://github.com/Kitware/CMake/releases/download/vVERSION/cmake-VERSION-windows-x86_64.zip"
                 "linux-x64" = "https://github.com/Kitware/CMake/releases/download/vVERSION/cmake-VERSION-linux-x86_64.tar.gz"
+                "linux-arm64" = "https://github.com/Kitware/CMake/releases/download/vVERSION/cmake-VERSION-linux-aarch64.tar.gz"
                 "macos-x64" = "https://github.com/Kitware/CMake/releases/download/vVERSION/cmake-VERSION-macos-universal.tar.gz"
                 "macos-arm64" = "https://github.com/Kitware/CMake/releases/download/vVERSION/cmake-VERSION-macos-universal.tar.gz"
             }
@@ -281,6 +326,7 @@ try
             "url" = @{
                 "windows-x64" = "https://github.com/vadimcn/vscode-lldb/releases/download/vVERSION/codelldb-x86_64-windows.vsix"
                 "linux-x64" = "https://github.com/vadimcn/vscode-lldb/releases/download/vVERSION/codelldb-x86_64-linux.vsix"
+                "linux-arm64" = "https://github.com/vadimcn/vscode-lldb/releases/download/vVERSION/codelldb-aarch64-linux.vsix"
                 "macos-x64" = "https://github.com/vadimcn/vscode-lldb/releases/download/vVERSION/codelldb-x86_64-darwin.vsix"
                 "macos-arm64" = "https://github.com/vadimcn/vscode-lldb/releases/download/vVERSION/codelldb-aarch64-darwin.vsix"
             }
@@ -294,10 +340,11 @@ try
         @{
             "name" = "PowerLLDB"
             "url" = @{
-                "windows-x64" = "https://github.com/powertech-center/storage/raw/master/lldb/powerlldb-windows-x64.7z"
-                "linux-x64" = "https://github.com/powertech-center/storage/raw/master/lldb/powerlldb-linux-x64.7z"
-                "macos-x64" = "https://github.com/powertech-center/storage/raw/master/lldb/powerlldb-macos-x64.7z"
-                "macos-arm64" = "https://github.com/powertech-center/storage/raw/master/lldb/powerlldb-macos-arm64.7z"
+                "windows-x64" = "https://powertech.center/thirdparty/lldb/powerlldb-windows-x64.7z"
+                "linux-x64" = "https://powertech.center/thirdparty/lldb/powerlldb-linux-x64.7z"
+                "linux-arm64" = "https://powertech.center/thirdparty/lldb/powerlldb-linux-arm64.7z"
+                "macos-x64" = "https://powertech.center/thirdparty/lldb/powerlldb-macos-x64.7z"
+                "macos-arm64" = "https://powertech.center/thirdparty/lldb/powerlldb-macos-arm64.7z"
             }
             "binaries" = @(
                 "lldb/lldb-vscode"
@@ -341,12 +388,22 @@ try
             # Unpacking
             $Instance = $Project.class::new($Project, $Platform, $Url, $Version)
             $Instance.Unpack()
-            Remove-Directory $Instance.TempPath
-            if (($Version -eq "") -and ($Instance.Version -ne "")) {
-                $Version = $Instance.Version
-                Write-Host "Version $Version detected"
-                $Versions.local[$Project.name] = $Version
+            if ($Version -eq "") {
+                if ($Instance.Version -eq "") {
+                    if ((($Global:IsWindows) -and ($Platform -eq "windows-x64")) -or 
+                        (($Global:IsLinux) -and ($Platform -eq "linux-x64")) -or 
+                        (($Global:IsMacOS) -and ($Platform -eq "macos-x64"))) {
+                        $Instance.Version = $Instance.ExtractVersion()
+                    }
+                }
+
+                if ($Instance.Version -ne "") {
+                    $Version = $Instance.Version
+                    Write-Host "Version $Version detected"
+                    $Versions.local[$Project.name] = $Version
+                }
             }
+            Remove-Directory $Instance.TempPath
         }
     }
 
