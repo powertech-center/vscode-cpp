@@ -976,9 +976,9 @@
           "objective-c",
           "objective-cpp"
         ],
-        "program": "./thirdparty/lldb/lldb-vscode",
+        "program": "./thirdparty/bin/lldb-vscode",
         "windows": {
-          "program": "./thirdparty/lldb/lldb-vscode.exe"
+          "program": "./thirdparty/bin/lldb-vscode.exe"
         },
         "configurationAttributes": {
           "launch": {

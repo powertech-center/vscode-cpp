@@ -225,7 +225,7 @@ class PowerLLDBProject: Project {
 
     PowerLLDBProject([Hashtable] $Values, [string] $Platform, [string] $Url, [string] $Version) 
         : base($Values, $Platform, $Url, $Version) {
-        $this.TargetPath += "/lldb"
+        $this.TargetPath += "/bin"
     }
 
     [void] Unpack() {
@@ -347,7 +347,8 @@ try
                 "macos-arm64" = "https://powertech.center/thirdparty/lldb/powerlldb-macos-arm64.7z"
             }
             "binaries" = @(
-                "lldb/lldb-vscode"
+                "bin/lldb-vscode"
+                "bin/lldb-server"
             )
             "class" = [PowerLLDBProject]
         }
