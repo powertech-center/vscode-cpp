@@ -9,7 +9,8 @@
 * Minimalistic interface
 * C/C++ syntax highlighting and IntelliSense (based on [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) and [clangd](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd))
 * Debugging (based on [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) and [CodeLLDB](https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb))
-* ToDo Remote launches
+* ToDo Rich list of build systems
+* ToDo Remote debugging
 * ToDo Snippets
 
 # Quick Start
